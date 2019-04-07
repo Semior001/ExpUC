@@ -12,7 +12,14 @@
                         <v-form
                                 ref="form"
                                 lazy-validation
+                                @submit.prevent="validateAndSubmit"
                         >
+                            <v-alert
+                                    :value="showAlert"
+                                    type="error"
+                            >
+                                {{ alertMessage }}
+                            </v-alert>
                             <v-layout justify-center>
                                 <v-flex xs10 lg10>
                                     <v-text-field
@@ -36,7 +43,7 @@
                                 </v-flex>
                             </v-layout>
                             <v-layout justify-center>
-                                <v-btn color="success" @click="validateAndSubmit">Login</v-btn>
+                                <v-btn type="submit" color="success">Login</v-btn>
                             </v-layout>
                         </v-form>
                         <v-layout align-center justify-center column fill-height pt-3>
@@ -68,21 +75,30 @@
                 rules: {
                     required: value => !!value || 'Required.',
                     min: v => v.length >= 8 || 'Min 8 characters',
-                    email: s => s.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) != null || 'Enter a valid email',
-                    emailMatch: () => ('The email and password you entered doesn\'t match')
+                    email: s => s.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) != null || 'Enter a valid email'
                 },
-                showPassword: false
+                showPassword: false,
+                showAlert: false,
+                alertMessage: ""
             }
         },
         methods: {
             validateAndSubmit(){
-                if (this.$refs.form.validate()) {
-                    this.snackbar = true
-                    return;
-                }
+                this.showAlert = false;
+                // если какое-то поле введено не правильно
+                // if (!this.$refs.form.validate()) {
+                //     return;
+                // }
 
+                let email = this.email;
+                let password = this.password;
 
-
+                this.$store.dispatch("AUTH_REQUEST", { email, password }).then(() => {
+                    this.$router.push('/')
+                }).catch(err => {
+                    this.alertMessage = "Some error has been occurred. Please, contact with administrator";
+                    this.showAlert = true;
+                });
             }
         }
     }

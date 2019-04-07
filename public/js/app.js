@@ -1905,6 +1905,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'login-page',
   data: function data() {
@@ -1920,20 +1927,33 @@ __webpack_require__.r(__webpack_exports__);
         },
         email: function email(s) {
           return s.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) != null || 'Enter a valid email';
-        },
-        emailMatch: function emailMatch() {
-          return 'The email and password you entered doesn\'t match';
         }
       },
-      showPassword: false
+      showPassword: false,
+      showAlert: false,
+      alertMessage: ""
     };
   },
   methods: {
     validateAndSubmit: function validateAndSubmit() {
-      if (this.$refs.form.validate()) {
-        this.snackbar = true;
-        return;
-      }
+      var _this = this;
+
+      this.showAlert = false; // если какое-то поле введено не правильно
+      // if (!this.$refs.form.validate()) {
+      //     return;
+      // }
+
+      var email = this.email;
+      var password = this.password;
+      this.$store.dispatch("AUTH_REQUEST", {
+        email: email,
+        password: password
+      }).then(function () {
+        _this.$router.push('/');
+      })["catch"](function (err) {
+        _this.alertMessage = "Some error has been occurred. Please, contact with administrator";
+        _this.showAlert = true;
+      });
     }
   }
 });
@@ -37186,8 +37206,29 @@ var render = function() {
                     [
                       _c(
                         "v-form",
-                        { ref: "form", attrs: { "lazy-validation": "" } },
+                        {
+                          ref: "form",
+                          attrs: { "lazy-validation": "" },
+                          on: {
+                            submit: function($event) {
+                              $event.preventDefault()
+                              return _vm.validateAndSubmit($event)
+                            }
+                          }
+                        },
                         [
+                          _c(
+                            "v-alert",
+                            { attrs: { value: _vm.showAlert, type: "error" } },
+                            [
+                              _vm._v(
+                                "\n                            " +
+                                  _vm._s(_vm.alertMessage) +
+                                  "\n                        "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
                           _c(
                             "v-layout",
                             { attrs: { "justify-center": "" } },
@@ -37255,10 +37296,7 @@ var render = function() {
                             [
                               _c(
                                 "v-btn",
-                                {
-                                  attrs: { color: "success" },
-                                  on: { click: _vm.validateAndSubmit }
-                                },
+                                { attrs: { type: "submit", color: "success" } },
                                 [_vm._v("Login")]
                               )
                             ],
@@ -79183,7 +79221,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuetify__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(vuetify__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _components_MainApp_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/MainApp.vue */ "./resources/js/components/MainApp.vue");
 /* harmony import */ var _routes_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./routes.js */ "./resources/js/routes.js");
+/* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./store.js */ "./resources/js/store.js");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
+
 
 
 
@@ -79209,6 +79249,7 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
 var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   el: '#app',
   router: router,
+  store: _store_js__WEBPACK_IMPORTED_MODULE_6__["store"],
   components: {
     MainApp: _components_MainApp_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   }
@@ -79684,6 +79725,82 @@ var routes = [{
   name: 'not-found',
   component: _components_NotFound__WEBPACK_IMPORTED_MODULE_2__["default"]
 }];
+
+/***/ }),
+
+/***/ "./resources/js/store.js":
+/*!*******************************!*\
+  !*** ./resources/js/store.js ***!
+  \*******************************/
+/*! exports provided: store */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "store", function() { return store; });
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+vue__WEBPACK_IMPORTED_MODULE_1__["use"](vuex__WEBPACK_IMPORTED_MODULE_0__["default"]);
+var store = new vuex__WEBPACK_IMPORTED_MODULE_0__["default"].Store({
+  state: {
+    token: localStorage.getItem('user-token') || '',
+    status: ''
+  },
+  getters: {
+    IS_AUTHENTICATED: function IS_AUTHENTICATED(state) {
+      return !!state.token;
+    },
+    AUTH_STATUS: function AUTH_STATUS(state) {
+      return state.status;
+    }
+  },
+  mutations: {
+    "AUTH_REQUEST": function AUTH_REQUEST(state) {
+      state.status = 'loading';
+    },
+    "AUTH_SUCCESS": function AUTH_SUCCESS(state, token) {
+      state.status = 'success';
+      state.token = token;
+    },
+    "AUTH_ERROR": function AUTH_ERROR(state) {
+      state.status = 'error';
+    }
+  },
+  actions: {
+    "AUTH_REQUEST": function AUTH_REQUEST(_ref, user) {
+      var commit = _ref.commit,
+          dispatch = _ref.dispatch;
+      return new Promise(function (resolve, reject) {
+        // The Promise used for router redirect in login
+        commit("AUTH_REQUEST");
+        axios__WEBPACK_IMPORTED_MODULE_2__({
+          url: 'auth',
+          data: user,
+          method: 'POST'
+        }).then(function (resp) {
+          var token = resp.data.token;
+          localStorage.setItem('user-token', token); // store the token in localstorage
+
+          commit("AUTH_SUCCESS", token); // you have your token, now log in your user :)
+
+          dispatch("USER_REQUEST");
+          resolve(resp);
+        })["catch"](function (err) {
+          commit("AUTH_ERROR", err);
+          localStorage.removeItem('user-token'); // if the request fails, remove any possible user token if possible
+
+          reject(err);
+        });
+      });
+    }
+  }
+});
 
 /***/ }),
 

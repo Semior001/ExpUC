@@ -3,13 +3,13 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Vuex from 'vuex';
 import Vuetify from 'vuetify';
-
 import MainApp from './components/MainApp.vue';
 import {routes} from './routes.js';
-
+import {store} from './store.js';
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
+
 Vue.use(Vuetify, {
     theme: {
         background: '#212121',
@@ -28,6 +28,7 @@ const router = new VueRouter({
 const app = new Vue({
     el: '#app',
     router,
+    store,
     components: {
         MainApp
     }
