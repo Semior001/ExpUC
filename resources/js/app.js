@@ -25,6 +25,12 @@ const router = new VueRouter({
     mode: 'history'
 });
 
+const token = localStorage.getItem("user-token");
+
+if (token) {
+    axios.defaults.headers.common['Authorization'] = token
+}
+
 const app = new Vue({
     el: '#app',
     router,

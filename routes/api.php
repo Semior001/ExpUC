@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +16,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::post('register', 'ApiRegisterController@register');
+Route::post('login', 'ApiLoginController@login');
+
+Route::get('test', function(Request $request){
+    return $request->bearerToken();
+});
+
+Route::middleware('auth:api')->get('user', function (Request $request) {
     return $request->user();
 });

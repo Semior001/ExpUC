@@ -5,7 +5,7 @@
                 <v-card>
                     <v-card-title>
                         <v-layout justify-center>
-                            <span class="headline">Login</span>
+                            <span class="headline">Registration</span>
                         </v-layout>
                     </v-card-title>
                     <v-container>
@@ -23,7 +23,13 @@
                             <v-layout justify-center>
                                 <v-flex xs10 lg10>
                                     <v-text-field
-                                            required
+                                            v-model="name"
+                                            label="Name"
+                                            :rules="[rules.required]"
+                                    >
+                                    </v-text-field>
+
+                                    <v-text-field
                                             v-model="email"
                                             label="Email"
                                             :rules="[rules.required, rules.email]"
@@ -31,25 +37,30 @@
                                     </v-text-field>
 
                                     <v-text-field
-                                            required
                                             v-model="password"
                                             label="Password"
-                                            :type="showPassword ? 'text' : 'password'"
+                                            :type="'password'"
                                             :rules="[rules.required, rules.min]"
-                                            :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-                                            @click:append="showPassword = !showPassword"
+                                    >
+                                    </v-text-field>
+
+                                    <v-text-field
+                                            v-model="passwordConfirmation"
+                                            label="Password confirmation"
+                                            :type="'password'"
+                                            :rules="[rules.required, rules.min]"
                                     >
                                     </v-text-field>
                                 </v-flex>
                             </v-layout>
                             <v-layout justify-center>
-                                <v-btn type="submit" color="success">Login</v-btn>
+                                <v-btn type="submit" color="success">Register</v-btn>
                             </v-layout>
                         </v-form>
                         <v-layout align-center justify-center column fill-height pt-3>
                             <v-flex>
-                                <router-link to="/register">
-                                    <a>Register</a>
+                                <router-link to="/login">
+                                    <a>Login</a>
                                 </router-link>
                             </v-flex>
                             <v-flex pt-3>
@@ -67,17 +78,18 @@
 
 <script>
     export default {
-        name: 'login-page',
-        data () {
+        name: 'register-page',
+        data ()  {
             return {
                 email: '',
+                name: '',
                 password: '',
+                passwordConfirmation: '',
                 rules: {
                     required: value => !!value || 'Required.',
                     min: v => v.length >= 8 || 'Min 8 characters',
                     email: s => s.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) != null || 'Enter a valid email'
                 },
-                showPassword: false,
                 showAlert: false,
                 alertMessage: ""
             }
@@ -90,10 +102,12 @@
                     return;
                 }
 
+                let name = this.name;
                 let email = this.email;
                 let password = this.password;
+                let password_confirmation = this.passwordConfirmation;
 
-                this.$store.dispatch("AUTH_REQUEST", { email, password }).then(() => {
+                this.$store.dispatch("REGISTER_REQUEST", { name, email, password, password_confirmation }).then(() => {
                     this.$router.push('/')
                 }).catch(err => {
                     this.alertMessage = err.toString() + " Please, contact with administrator.";
