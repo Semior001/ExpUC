@@ -28,7 +28,7 @@ class ApiLoginController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => $validator->messages(),
-            ]);
+            ])->setStatusCode(400);
         } else {
             $user = User::where('email',$request->email)->first();
             if($user) {
@@ -43,17 +43,17 @@ class ApiLoginController extends Controller
                             'name'         => $user->name,
                             'email'        => $user->email,
                             'api_token' => $this->apiToken,
-                        ]);
+                        ])->setStatusCode(200);
                     }
                 } else {
                     return response()->json([
-                        'message' => 'Invalid Password',
-                    ]);
+                        'message' => 'Unable to log in. Please check that you have entered your login and password correctly.',
+                    ])->setStatusCode(400);
                 }
             } else {
                 return response()->json([
-                    'message' => 'User not found',
-                ]);
+                    'message' => 'Unable to log in. Please check that you have entered your login and password correctly.',
+                ])->setStatusCode(403);
             }
         }
         return response()->json([

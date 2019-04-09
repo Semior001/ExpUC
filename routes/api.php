@@ -19,10 +19,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', 'ApiRegisterController@register');
 Route::post('login', 'ApiLoginController@login');
 
-Route::get('test', function(Request $request){
-    return $request->bearerToken();
-});
-
 Route::middleware('auth:api')->get('user', function (Request $request) {
-    return $request->user();
+    return json_encode([
+        'user' => $request->user()
+    ]);
 });

@@ -10,12 +10,37 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
     state: {
         token: localStorage.getItem('user-token') || '',
-        status: ''
+        status: '',
+        userData: {}
     },
 
     getters: {
         isAuthenticated: state => !!state.token,
         authStatus: state => state.status,
+        userData: state => {
+            state.userData = JSON.parse(localStorage.getItem('user-data'));
+
+            if(state.userData)
+                return state.userData;
+
+            if(!!state.token){
+
+                console.log("loading user data...");
+
+                axios({url: 'api/user', method: 'GET'})
+                    .then(response => {
+                        const userData = response.data.user;
+                        localStorage.setItem('user-data', JSON.stringify(userData));
+                        state.userData = userData;
+                    })
+                    .catch(error => {
+                        localStorage.removeItem('user-data');
+                    });
+                return state.userData;
+            }
+
+            return null;
+        }
     },
 
     mutations: {
@@ -29,6 +54,9 @@ export const store = new Vuex.Store({
         "AUTH_ERROR": (state) => {
             state.status = 'error';
         },
+        "PUT_USER_DATA": (state, user) => {
+            state.userData = user;
+        }
     },
 
     actions: {
@@ -37,11 +65,17 @@ export const store = new Vuex.Store({
                 commit("AUTH_REQUEST");
                 axios({url: 'api/login', data: user, method: 'POST'})
                     .then(response => {
-                        const token = response.data.api_token;
-                        localStorage.setItem('user-token', token);
-                        axios.defaults.headers.common['Authorization'] = token;
-                        commit("AUTH_SUCCESS", token);
-                        resolve(response)
+                        if(response.status === 200) {
+                            const token = response.data.api_token;
+                            localStorage.setItem('user-token', token);
+                            axios.defaults.headers.common['Authorization'] = "Bearer " + token;
+                            commit("AUTH_SUCCESS", token);
+                            resolve(response);
+                            return;
+                        }
+                        commit("AUTH_ERROR", response);
+                        localStorage.removeItem('user-token'); // if the request fails, remove any possible user token if possible
+                        reject(response);
                     })
                     .catch(error => {
                         commit("AUTH_ERROR", error);
@@ -54,7 +88,8 @@ export const store = new Vuex.Store({
             return new Promise((resolve, reject) => {
                 commit("AUTH_LOGOUT");
                 localStorage.removeItem('user-token');
-                delete axios.defaults.headers.common['Authorization']
+                localStorage.removeItem('user-data');
+                delete axios.defaults.headers.common['Authorization'];
                 resolve()
             })
         },
@@ -64,11 +99,31 @@ export const store = new Vuex.Store({
                     .then(response => {
                         const token = response.data.api_token;
                         localStorage.setItem('user-token', token);
-                        axios.defaults.headers.common['Authorization'] = token;
+                        axios.defaults.headers.common['Authorization'] = "Bearer" + token;
                         commit("AUTH_SUCCESS", token);
                         resolve(response);
                     })
+                    .catch(error => {
+                        commit("AUTH_ERROR", error);
+                        localStorage.removeItem('user-token');
+                        reject(error);
+                    })
             });
-        }
+        },
+        "LOAD_USER_DATA": ({commit, dispatch}) => {
+            return new Promise((resolve, reject) => {
+                axios({url: 'api/user', method: 'GET'})
+                    .then(response => {
+                        const userData = response.data.user;
+                        localStorage.setItem('user-data', JSON.stringify(userData));
+                        commit("PUT_USER_DATA", userData);
+                        resolve(response);
+                    })
+                    .catch(error => {
+                        localStorage.removeItem('user-data');
+                        reject(error);
+                    });
+            });
+        },
     },
 });
