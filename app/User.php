@@ -28,29 +28,6 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function getAvatarThumb($size = 25, $options = null)
-    {
-        if (is_string($options)) {
-            $options = ['default' => $options];
-        }
-        elseif (!is_array($options)) {
-            $options = [];
-        }
-
-        // Default is "mm" (Mystery man)
-        $default = array_get($options, 'default', 'mm');
-
-        if ($this->avatar) {
-            return $this->avatar->last()->getThumb($size, $size, $options);
-        }
-        else {
-            return '//www.gravatar.com/avatar/'.
-                md5(strtolower(trim($this->email))).
-                '?s='.$size.
-                '&d='.urlencode($default);
-        }
-    }
-
     /**
      * The attributes that should be cast to native types.
      *

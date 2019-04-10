@@ -6,8 +6,6 @@
                 dark
         >
 
-            <!-- todo синхронный запрос на получение данных о пользователе -->
-
             <v-list class="pa-1">
 
                 <v-list-tile avatar tag="div">

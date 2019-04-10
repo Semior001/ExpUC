@@ -14,14 +14,21 @@
                         <v-form
                                 ref="form"
                                 lazy-validation
+                                @submit.prevent="onSubmit"
                         >
                             <v-layout justify-center>
                                 <v-flex xs10 lg10>
                                     <v-alert
+                                            class="mb-5"
                                             :value="!!alertMessage"
                                             :type="alertMessageType">
                                         {{ alertMessage }}
                                     </v-alert>
+                                    <v-text-field
+                                            v-model="email"
+                                            label="Email (cannot be edited)"
+                                            disabled>
+                                    </v-text-field>
                                     <v-text-field
                                             required
                                             name="name"
@@ -35,21 +42,22 @@
                                             v-model="surname"
                                             label="Surname">
                                     </v-text-field>
-                                    <v-text-field
-                                            required
-                                            name="email"
-                                            v-model="email"
-                                            label="Email"
-                                            :rules="[rules.required, rules.email]">
-                                    </v-text-field>
 
-                                    <!-- todo avatar upload btn -->
-                                    <div id="previewAvatarContainer" class="justify-center">
-                                        <img v-if="previewAvatarUrl" :src="previewAvatarUrl" alt="whoops">
-                                        <input @change="previewAvatar" ref="uploadAvatarInput" type="file" hidden accept="image/*">
-                                        <v-btn class="ml-5" @click="startFileDialog" color="primary">Upload avatar</v-btn>
+                                    <v-divider></v-divider>
+
+                                    <div class="row">
+                                        <div id="previewAvatarContainer" class="col-lg-6">
+                                            <img v-if="previewAvatarUrl" :src="previewAvatarUrl" alt="whoops">
+                                            <input name="avatar" @change="previewAvatar" ref="uploadAvatarInput" type="file" hidden accept="image/*">
+                                            <v-btn class="ml-5" @click="startFileDialog" color="primary">Upload avatar</v-btn>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <v-checkbox
+                                                    v-model="showSchedule"
+                                                    :label="`Show my schedule to others`"
+                                            ></v-checkbox>
+                                        </div>
                                     </div>
-                                    <!-- /todo avatar upload btn -->
 
                                     <v-divider></v-divider>
 
@@ -68,6 +76,15 @@
                                     </v-text-field>
 
                                     <v-divider></v-divider>
+
+                                    <v-text-field
+                                            autocomplete="new-password"
+                                            name="current_password"
+                                            v-model="currentPassword"
+                                            label="Current password"
+                                            :type="'password'"
+                                    >
+                                    </v-text-field>
 
                                     <v-text-field
                                             autocomplete="new-password"
@@ -118,6 +135,8 @@
                 telegram: '',
                 password: '',
                 passwordConfirmation: '',
+                currentPassword: '',
+                showSchedule: false,
                 rules: {
                     required: value => !!value || 'Required.',
                     min: v => v.length >= 8 || 'Min 8 characters',
@@ -133,6 +152,40 @@
             previewAvatar: function(){
                 const file = this.$refs.uploadAvatarInput.files[0];
                 this.previewAvatarUrl = URL.createObjectURL(file);
+            },
+            onSubmit: function(){
+
+                this.alertMessageType = 'warning';
+                this.alertMessage = 'Processing... Please wait...';
+
+                const data = new FormData;
+                data.append('name', this.name);
+                data.append('surname', this.surname);
+                data.append('telegram', this.telegram);
+                data.append('current_password', this.currentPassword);
+                data.append('password', this.password);
+                data.append('password_confirmation', this.passwordConfirmation);
+                data.append('show_schedule', this.showSchedule ? '1' : '0');
+
+                if(this.$refs.uploadAvatarInput.files.length)
+                    data.append('avatar', this.$refs.uploadAvatarInput.files[0]);
+
+                axios({
+                    url: 'api/user/update',
+                    method: 'POST',
+                    data: data
+                }).then(response => {
+                    if(response.status === 200){
+                        this.alertMessageType = 'success';
+                        this.alertMessage = 'Success! Your profile data has been updated!';
+                        return;
+                    }
+                    this.alertMessageType = 'error';
+                    this.alertMessage = response.response.data;
+                }).catch(error => {
+                    this.alertMessageType = 'error';
+                    this.alertMessage = error.response.data;
+                });
             }
         },
         created() {
@@ -143,8 +196,9 @@
                     this.telegram = this.$store.getters['user/telegram'];
                     this.email = this.$store.getters['user/email'];
                     this.previewAvatarUrl = this.$store.getters['user/avatar'];
+                    this.showSchedule = this.$store.getters['user/showSchedule'];
                 }).catch((error) => {
-                    this.alertMessage = error.response.data;
+                    this.alertMessage = error;
                 });
         }
     }

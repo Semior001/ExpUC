@@ -2077,8 +2077,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2267,6 +2265,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2283,6 +2298,8 @@ __webpack_require__.r(__webpack_exports__);
       telegram: '',
       password: '',
       passwordConfirmation: '',
+      currentPassword: '',
+      showSchedule: false,
       rules: {
         required: function required(value) {
           return !!value || 'Required.';
@@ -2304,19 +2321,52 @@ __webpack_require__.r(__webpack_exports__);
     previewAvatar: function previewAvatar() {
       var file = this.$refs.uploadAvatarInput.files[0];
       this.previewAvatarUrl = URL.createObjectURL(file);
+    },
+    onSubmit: function onSubmit() {
+      var _this = this;
+
+      this.alertMessageType = 'warning';
+      this.alertMessage = 'Processing... Please wait...';
+      var data = new FormData();
+      data.append('name', this.name);
+      data.append('surname', this.surname);
+      data.append('telegram', this.telegram);
+      data.append('current_password', this.currentPassword);
+      data.append('password', this.password);
+      data.append('password_confirmation', this.passwordConfirmation);
+      data.append('show_schedule', this.showSchedule ? '1' : '0');
+      if (this.$refs.uploadAvatarInput.files.length) data.append('avatar', this.$refs.uploadAvatarInput.files[0]);
+      axios__WEBPACK_IMPORTED_MODULE_1__({
+        url: 'api/user/update',
+        method: 'POST',
+        data: data
+      }).then(function (response) {
+        if (response.status === 200) {
+          _this.alertMessageType = 'success';
+          _this.alertMessage = 'Success! Your profile data has been updated!';
+          return;
+        }
+
+        _this.alertMessageType = 'error';
+        _this.alertMessage = response.response.data;
+      })["catch"](function (error) {
+        _this.alertMessageType = 'error';
+        _this.alertMessage = error.response.data;
+      });
     }
   },
   created: function created() {
-    var _this = this;
+    var _this2 = this;
 
     this.$store.dispatch('user/LOAD_USER_DATA').then(function (response) {
-      _this.name = _this.$store.getters['user/name'];
-      _this.surname = _this.$store.getters['user/surname'];
-      _this.telegram = _this.$store.getters['user/telegram'];
-      _this.email = _this.$store.getters['user/email'];
-      _this.previewAvatarUrl = _this.$store.getters['user/avatar'];
+      _this2.name = _this2.$store.getters['user/name'];
+      _this2.surname = _this2.$store.getters['user/surname'];
+      _this2.telegram = _this2.$store.getters['user/telegram'];
+      _this2.email = _this2.$store.getters['user/email'];
+      _this2.previewAvatarUrl = _this2.$store.getters['user/avatar'];
+      _this2.showSchedule = _this2.$store.getters['user/showSchedule'];
     })["catch"](function (error) {
-      _this.alertMessage = error.response.data;
+      _this2.alertMessage = error;
     });
   }
 });
@@ -38936,7 +38986,16 @@ var render = function() {
                     [
                       _c(
                         "v-form",
-                        { ref: "form", attrs: { "lazy-validation": "" } },
+                        {
+                          ref: "form",
+                          attrs: { "lazy-validation": "" },
+                          on: {
+                            submit: function($event) {
+                              $event.preventDefault()
+                              return _vm.onSubmit($event)
+                            }
+                          }
+                        },
                         [
                           _c(
                             "v-layout",
@@ -38949,6 +39008,7 @@ var render = function() {
                                   _c(
                                     "v-alert",
                                     {
+                                      staticClass: "mb-5",
                                       attrs: {
                                         value: !!_vm.alertMessage,
                                         type: _vm.alertMessageType
@@ -38962,6 +39022,20 @@ var render = function() {
                                       )
                                     ]
                                   ),
+                                  _vm._v(" "),
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "Email (cannot be edited)",
+                                      disabled: ""
+                                    },
+                                    model: {
+                                      value: _vm.email,
+                                      callback: function($$v) {
+                                        _vm.email = $$v
+                                      },
+                                      expression: "email"
+                                    }
+                                  }),
                                   _vm._v(" "),
                                   _c("v-text-field", {
                                     attrs: {
@@ -38994,63 +39068,69 @@ var render = function() {
                                     }
                                   }),
                                   _vm._v(" "),
-                                  _c("v-text-field", {
-                                    attrs: {
-                                      required: "",
-                                      name: "email",
-                                      label: "Email",
-                                      rules: [
-                                        _vm.rules.required,
-                                        _vm.rules.email
-                                      ]
-                                    },
-                                    model: {
-                                      value: _vm.email,
-                                      callback: function($$v) {
-                                        _vm.email = $$v
-                                      },
-                                      expression: "email"
-                                    }
-                                  }),
+                                  _c("v-divider"),
                                   _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    {
-                                      staticClass: "justify-center",
-                                      attrs: { id: "previewAvatarContainer" }
-                                    },
-                                    [
-                                      _vm.previewAvatarUrl
-                                        ? _c("img", {
-                                            attrs: {
-                                              src: _vm.previewAvatarUrl,
-                                              alt: "whoops"
-                                            }
-                                          })
-                                        : _vm._e(),
-                                      _vm._v(" "),
-                                      _c("input", {
-                                        ref: "uploadAvatarInput",
-                                        attrs: {
-                                          type: "file",
-                                          hidden: "",
-                                          accept: "image/*"
-                                        },
-                                        on: { change: _vm.previewAvatar }
-                                      }),
-                                      _vm._v(" "),
-                                      _c(
-                                        "v-btn",
-                                        {
-                                          staticClass: "ml-5",
-                                          attrs: { color: "primary" },
-                                          on: { click: _vm.startFileDialog }
-                                        },
-                                        [_vm._v("Upload avatar")]
-                                      )
-                                    ],
-                                    1
-                                  ),
+                                  _c("div", { staticClass: "row" }, [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass: "col-lg-6",
+                                        attrs: { id: "previewAvatarContainer" }
+                                      },
+                                      [
+                                        _vm.previewAvatarUrl
+                                          ? _c("img", {
+                                              attrs: {
+                                                src: _vm.previewAvatarUrl,
+                                                alt: "whoops"
+                                              }
+                                            })
+                                          : _vm._e(),
+                                        _vm._v(" "),
+                                        _c("input", {
+                                          ref: "uploadAvatarInput",
+                                          attrs: {
+                                            name: "avatar",
+                                            type: "file",
+                                            hidden: "",
+                                            accept: "image/*"
+                                          },
+                                          on: { change: _vm.previewAvatar }
+                                        }),
+                                        _vm._v(" "),
+                                        _c(
+                                          "v-btn",
+                                          {
+                                            staticClass: "ml-5",
+                                            attrs: { color: "primary" },
+                                            on: { click: _vm.startFileDialog }
+                                          },
+                                          [_vm._v("Upload avatar")]
+                                        )
+                                      ],
+                                      1
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-lg-6" },
+                                      [
+                                        _c("v-checkbox", {
+                                          attrs: {
+                                            label: "Show my schedule to others"
+                                          },
+                                          model: {
+                                            value: _vm.showSchedule,
+                                            callback: function($$v) {
+                                              _vm.showSchedule = $$v
+                                            },
+                                            expression: "showSchedule"
+                                          }
+                                        })
+                                      ],
+                                      1
+                                    )
+                                  ]),
                                   _vm._v(" "),
                                   _c("v-divider"),
                                   _vm._v(" "),
@@ -39089,6 +39169,22 @@ var render = function() {
                                   }),
                                   _vm._v(" "),
                                   _c("v-divider"),
+                                  _vm._v(" "),
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      autocomplete: "new-password",
+                                      name: "current_password",
+                                      label: "Current password",
+                                      type: "password"
+                                    },
+                                    model: {
+                                      value: _vm.currentPassword,
+                                      callback: function($$v) {
+                                        _vm.currentPassword = $$v
+                                      },
+                                      expression: "currentPassword"
+                                    }
+                                  }),
                                   _vm._v(" "),
                                   _c("v-text-field", {
                                     attrs: {
@@ -81982,7 +82078,8 @@ var state = {
   name: '',
   surname: '',
   telegram: '',
-  avatar: ''
+  avatar: '',
+  showSchedule: false
 };
 var getters = {
   email: function email(state) {
@@ -82003,6 +82100,9 @@ var getters = {
   avatar: function avatar(state) {
     return state.avatar;
   },
+  showSchedule: function showSchedule(state) {
+    return state.showSchedule;
+  },
   isAuthenticated: function isAuthenticated(state) {
     return !!state.token;
   }
@@ -82021,6 +82121,7 @@ var mutations = {
     state.name = '';
     state.surname = '';
     state.telegram = '';
+    state.avatar = '';
   },
   "AUTH_REQUEST": function AUTH_REQUEST(state) {
     state.status = 'loading';
@@ -82036,6 +82137,7 @@ var mutations = {
     state.surname = userData.surname;
     state.telegram = userData.telegram;
     state.avatar = userData.avatar;
+    state.showSchedule = userData.showSchedule;
   }
 };
 var actions = {
@@ -82115,7 +82217,8 @@ var actions = {
             name: userData['name'],
             surname: userData['surname'],
             telegram: userData['telegram'],
-            avatar: userData['avatar']
+            avatar: userData['avatar'],
+            showSchedule: userData['showSchedule']
           });
           resolve(response);
         }

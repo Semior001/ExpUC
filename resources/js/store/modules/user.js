@@ -7,6 +7,7 @@ const state = {
     surname: '',
     telegram: '',
     avatar: '',
+    showSchedule: false
 };
 
 const getters = {
@@ -16,6 +17,7 @@ const getters = {
     telegram: state => state.telegram,
     token: state => state.token,
     avatar: state => state.avatar,
+    showSchedule: state => state.showSchedule,
     isAuthenticated: state => !!state.token
 };
 
@@ -33,6 +35,7 @@ const mutations = {
         state.name = '';
         state.surname = '';
         state.telegram = '';
+        state.avatar = '';
     },
     "AUTH_REQUEST": (state) => {
         state.status = 'loading';
@@ -48,6 +51,7 @@ const mutations = {
         state.surname = userData.surname;
         state.telegram = userData.telegram;
         state.avatar = userData.avatar;
+        state.showSchedule = userData.showSchedule;
     },
 };
 
@@ -111,7 +115,8 @@ const actions = {
                             name: userData['name'],
                             surname: userData['surname'],
                             telegram: userData['telegram'],
-                            avatar: userData['avatar']
+                            avatar: userData['avatar'],
+                            showSchedule: userData['showSchedule']
                         });
                         resolve(response);
                     }

@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register', 'ApiRegisterController@register');
 Route::post('login', 'ApiLoginController@login');
-Route::get('user/getAvatarThumb', 'ApiUserController@getAvatarThumb');
 
-Route::middleware('auth:api')->get('user/getBasicUserData', 'ApiUserController@getBasicUserData');
+Route::group(['middleware' => 'auth:api'], function(){
+    Route::get('user/getBasicUserData', 'ApiUserController@getBasicUserData');
+    Route::post('user/update', 'ApiUserController@updateUser');
+});
