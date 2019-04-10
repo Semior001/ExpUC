@@ -4,6 +4,7 @@ import NotFound from "./components/NotFound";
 import RegisterPage from "./components/RegisterPage";
 import Schedule from "./components/Schedule";
 import store from './store/index'
+import Profile from "./components/Profile";
 
 const ifNotAuthenticated = (to, from, next) => {
     if (!store.getters['user/isAuthenticated']) {
@@ -50,6 +51,14 @@ export const routes = [
         path: '/register',
         component: RegisterPage,
         beforeEnter: ifNotAuthenticated,
+        showInToolbar: false
+    },
+    {
+        title: 'Profile',
+        icon: 'account_box',
+        path: '/profile',
+        component: Profile,
+        beforeEnter: ifAuthenticated,
         showInToolbar: false
     },
     {

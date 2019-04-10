@@ -5,7 +5,8 @@ const state = {
     email: '',
     name: '',
     surname: '',
-    telegram: ''
+    telegram: '',
+    avatar: '',
 };
 
 const getters = {
@@ -14,6 +15,7 @@ const getters = {
     surname: state => state.surname,
     telegram: state => state.telegram,
     token: state => state.token,
+    avatar: state => state.avatar,
     isAuthenticated: state => !!state.token
 };
 
@@ -45,6 +47,7 @@ const mutations = {
         state.name = userData.name;
         state.surname = userData.surname;
         state.telegram = userData.telegram;
+        state.avatar = userData.avatar;
     },
 };
 
@@ -99,7 +102,7 @@ const actions = {
     },
     "LOAD_USER_DATA": ({commit, dispatch}) => {
         return new Promise(function(resolve, reject){
-            axios({url: 'api/getBasicUserData', method: 'GET'})
+            axios({url: 'api/user/getBasicUserData', method: 'GET'})
                 .then(response => {
                     if(response.status === 200) {
                         const userData = response.data;
@@ -107,7 +110,8 @@ const actions = {
                             email: userData['email'],
                             name: userData['name'],
                             surname: userData['surname'],
-                            telegram: userData['telegram']
+                            telegram: userData['telegram'],
+                            avatar: userData['avatar']
                         });
                         resolve(response);
                     }
