@@ -160,8 +160,8 @@
 
                 const data = new FormData;
                 data.append('name', this.name);
-                data.append('surname', this.surname);
-                data.append('telegram', this.telegram);
+                data.append('surname', !!this.surname ? this.surname : '');
+                data.append('telegram', !!this.telegram ? this.telegram : '');
                 data.append('current_password', this.currentPassword);
                 data.append('password', this.password);
                 data.append('password_confirmation', this.passwordConfirmation);

@@ -1802,6 +1802,38 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Home',
@@ -1970,7 +2002,7 @@ __webpack_require__.r(__webpack_exports__);
     axios__WEBPACK_IMPORTED_MODULE_0__["interceptors"].response.use(undefined, function (err) {
       if (err.response.status === 401 && err.response.config && !err.response.config.__isRetryRequest) {
         return new Promise(function (resolve, reject) {
-          router.push('/login');
+          document.location.reload();
           store.dispatch('user/AUTH_LOGOUT');
         });
       }
@@ -2329,8 +2361,8 @@ __webpack_require__.r(__webpack_exports__);
       this.alertMessage = 'Processing... Please wait...';
       var data = new FormData();
       data.append('name', this.name);
-      data.append('surname', this.surname);
-      data.append('telegram', this.telegram);
+      data.append('surname', !!this.surname ? this.surname : '');
+      data.append('telegram', !!this.telegram ? this.telegram : '');
       data.append('current_password', this.currentPassword);
       data.append('password', this.password);
       data.append('password_confirmation', this.passwordConfirmation);
@@ -2554,13 +2586,131 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Schedule',
   components: {
     Navigation: _Navigation__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  mounted: function mounted() {}
+  data: function data() {
+    return {
+      today: '2019-01-08',
+      events: [{
+        title: 'Weekly Meeting',
+        date: '2019-01-07',
+        time: '09:00',
+        duration: 45
+      }, {
+        title: 'Thomas\' Birthday',
+        date: '2019-01-10'
+      }, {
+        title: 'Mash Potatoes',
+        date: '2019-01-09',
+        time: '12:30',
+        duration: 180
+      }]
+    };
+  },
+  computed: {
+    // convert the list of events into a map of lists keyed by date
+    eventsMap: function eventsMap() {
+      var map = {};
+      this.events.forEach(function (e) {
+        return (map[e.date] = map[e.date] || []).push(e);
+      });
+      return map;
+    }
+  },
+  mounted: function mounted() {
+    this.$refs.calendar.scrollToTime('08:00');
+  },
+  methods: {
+    open: function open(event) {
+      alert(event.title);
+    }
+  }
 });
 
 /***/ }),
@@ -38280,51 +38430,188 @@ var render = function() {
     [
       _c("Navigation"),
       _vm._v(" "),
-      _c("v-container", [
-        _c("div", { staticClass: "row justify-content-center" }, [
-          _c("div", { staticClass: "col-md-8" }, [
-            _c("div", { staticClass: "card bg-dark" }, [
-              _c("div", { staticClass: "card-header" }, [
-                _vm._v("User profile")
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "card-body" }, [
-                _c(
-                  "table",
-                  { staticClass: "table table-bordered table-dark" },
-                  [
-                    _c("tbody", [
-                      _c("tr", [
-                        _c("td", [_vm._v("Email")]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(_vm.userEmail))])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", [_vm._v("Name")]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(_vm.userName))])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", [_vm._v("Surname")]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(_vm.userSurname))])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", [_vm._v("Telegram")]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(_vm.userTelegram))])
+      _c(
+        "v-layout",
+        {
+          attrs: {
+            "align-center": "",
+            "justify-center": "",
+            row: "",
+            "full-height": ""
+          }
+        },
+        [
+          _c(
+            "v-flex",
+            { attrs: { xs10: "", lg8: "", "pt-5": "" } },
+            [
+              _c(
+                "v-card",
+                [
+                  _c(
+                    "v-card-title",
+                    [
+                      _c("v-layout", { attrs: { "justify-center": "" } }, [
+                        _c("span", { staticClass: "headline" }, [
+                          _vm._v("Information")
+                        ])
                       ])
-                    ])
-                  ]
-                )
-              ])
-            ])
-          ])
-        ])
-      ])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("v-container", [
+                    _c("p", [
+                      _vm._v(
+                        "\n                        This is an open-source application for Kazakh-British Technical University's students.\n                    "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _vm._v(
+                        "\n                        You may find sources on "
+                      ),
+                      _c(
+                        "a",
+                        {
+                          attrs: {
+                            href: "https://github.com/Semior001/kbtuchatter"
+                          }
+                        },
+                        [_vm._v("this")]
+                      ),
+                      _vm._v(" github repository.\n                    ")
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _vm._v(
+                        "\n                        I really hope that someone will take a look on this repository, try to improve this application. You may\n                        make ax pull-request to suggest me an additional functionality to this application.\n                    "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _vm._v(
+                        "\n                        I guess, that your pull-request will be an improvement of your CV, cause a lot of companies (for instance,\n                        Yandex) always asks their candidates for their code examples.\n                    "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("p"),
+                    _c("h3", [_vm._v("In progress:")]),
+                    _vm._v(" "),
+                    _c("ul", [
+                      _c("li", [_vm._v("Информация о стажировках")]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _vm._v("Регистрация на всякие КБТУшные мероприятия")
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _vm._v("Общажным\n                            "),
+                        _c("ul", [
+                          _c("li", [_vm._v("Показывать номер комнаты, койку")]),
+                          _vm._v(" "),
+                          _c("li", [
+                            _vm._v('Чекбокс "принисите мне еду, пожалуйста"')
+                          ])
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _vm._v(
+                          'Показывать других преподавателей предмета (изменил на показ "похожих" предметов - растояние Левенштейна >= 70%)'
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _vm._v("Показывать другие предметы преподов "),
+                        _c("i", { staticClass: "fas fa-check" })
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _vm._v(
+                          'Чекбокс для "распишитесь в attendance за меня, пожалуйста"'
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [_vm._v("android application")]),
+                      _vm._v(" "),
+                      _c("li", [_vm._v("Новости по предметам")]),
+                      _vm._v(" "),
+                      _c("li", [_vm._v("Форум (а может не надо?)")]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _vm._v("Инфа о квизах, рефератах (уведомления)")
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _vm._v("Офис-часы преподов "),
+                        _c("i", { staticClass: "fas fa-check" })
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _vm._v(
+                          "Просмотр чужого расписания (для просмотра свободного времени у одногруппников (друзей))\n                            "
+                        ),
+                        _c("ul", [
+                          _c("li", [
+                            _vm._v("Просмотр чужого расписания "),
+                            _c("i", { staticClass: "fas fa-check" }),
+                            _vm._v(" "),
+                            _c("ul", [
+                              _c("li", [
+                                _vm._v("Просто просмотр расписания "),
+                                _c("i", { staticClass: "fas fa-check" })
+                              ]),
+                              _vm._v(" "),
+                              _c("li", [
+                                _vm._v(
+                                  "Поиск пользователя для просмотра расписания "
+                                ),
+                                _c("i", { staticClass: "fas fa-check" })
+                              ])
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("li", [
+                            _vm._v(
+                              "Возможность сравнивать своё расписание с группой лиц - показывать свободные промежутки времени"
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("li", [
+                            _vm._v("Возможность отключить просмотр "),
+                            _c("b", [_vm._v("моего")]),
+                            _vm._v(" расписания "),
+                            _c("i", { staticClass: "fas fa-check" })
+                          ])
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _c(
+                          "span",
+                          {
+                            staticStyle: { "text-decoration": "line-through" }
+                          },
+                          [_vm._v("Добавить коды предметов (типа CSCI1203)")]
+                        ),
+                        _vm._v(
+                          " (преподы ведут один и тот же предмет - коды одинаковые)"
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("p")
+                  ])
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
     ],
     1
   )
@@ -39517,18 +39804,202 @@ var render = function() {
       _c("Navigation"),
       _vm._v(" "),
       _c(
-        "v-container",
+        "v-layout",
+        {
+          staticClass: "hidden-sm-and-down",
+          attrs: {
+            "align-center": "",
+            "justify-center": "",
+            row: "",
+            "full-height": ""
+          }
+        },
         [
           _c(
-            "v-card",
+            "v-flex",
+            { attrs: { xs10: "", lg8: "", "pt-5": "" } },
             [
-              _c("v-card-title", [
-                _vm._v("\n                Test title\n            ")
-              ]),
-              _vm._v(" "),
-              _c("v-container", [
-                _vm._v("\n                test body\n            ")
-              ])
+              _c(
+                "v-card",
+                [
+                  _c(
+                    "v-card-title",
+                    [
+                      _c("v-layout", { attrs: { "justify-center": "" } }, [
+                        _c("span", { staticClass: "headline" }, [
+                          _vm._v("Schedule")
+                        ])
+                      ])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-container",
+                    [
+                      _c("v-calendar", {
+                        ref: "calendar",
+                        attrs: {
+                          now: _vm.today,
+                          value: _vm.today,
+                          color: "primary",
+                          type: "week"
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "dayHeadere",
+                            fn: function(ref) {
+                              var date = ref.date
+                              return [
+                                _vm._l(_vm.eventsMap[date], function(event) {
+                                  return [
+                                    !event.time
+                                      ? _c("div", {
+                                          key: event.title,
+                                          staticClass: "my-event",
+                                          domProps: {
+                                            innerHTML: _vm._s(event.title)
+                                          },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.open(event)
+                                            }
+                                          }
+                                        })
+                                      : _vm._e()
+                                  ]
+                                })
+                              ]
+                            }
+                          },
+                          {
+                            key: "dayBody",
+                            fn: function(ref) {
+                              var date = ref.date
+                              var timeToY = ref.timeToY
+                              var minutesToPixels = ref.minutesToPixels
+                              return [
+                                _vm._l(_vm.eventsMap[date], function(event) {
+                                  return [
+                                    event.time
+                                      ? _c("div", {
+                                          key: event.title,
+                                          staticClass: "my-event with-time",
+                                          style: {
+                                            top: timeToY(event.time) + "px",
+                                            height:
+                                              minutesToPixels(event.duration) +
+                                              "px"
+                                          },
+                                          domProps: {
+                                            innerHTML: _vm._s(event.title)
+                                          },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.open(event)
+                                            }
+                                          }
+                                        })
+                                      : _vm._e()
+                                  ]
+                                })
+                              ]
+                            }
+                          }
+                        ])
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-layout",
+        {
+          staticClass: "hidden-lg-and-up",
+          attrs: {
+            "align-center": "",
+            "justify-center": "",
+            row: "",
+            "full-height": ""
+          }
+        },
+        [
+          _c("v-btn", [_c("v-icon", [_vm._v("keyboard_arrow_left")])], 1),
+          _vm._v(" "),
+          _c("v-btn", [_c("v-icon", [_vm._v("keyboard_arrow_right")])], 1),
+          _vm._v(" "),
+          _c(
+            "v-flex",
+            { attrs: { xs10: "", lg8: "", "pt-5": "" } },
+            [
+              _c(
+                "v-card",
+                [
+                  _c(
+                    "v-card-title",
+                    [
+                      _c("v-layout", { attrs: { "justify-center": "" } }, [
+                        _c("span", { staticClass: "headline" }, [
+                          _vm._v("Schedule")
+                        ])
+                      ])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-container",
+                    [
+                      _c("v-calendar", {
+                        attrs: { color: "primary", type: "day" },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "dayHeader",
+                            fn: function(ref) {
+                              var present = ref.present
+                              return [
+                                present
+                                  ? [
+                                      _vm._v(
+                                        "\n                                Today\n                            "
+                                      )
+                                    ]
+                                  : _vm._e()
+                              ]
+                            }
+                          },
+                          {
+                            key: "interval",
+                            fn: function(ref) {
+                              var hour = ref.hour
+                              return [
+                                _c("div", { staticClass: "text-xs-center" }, [
+                                  _vm._v(
+                                    "\n                                " +
+                                      _vm._s(hour) +
+                                      " o'clock\n                            "
+                                  )
+                                ])
+                              ]
+                            }
+                          }
+                        ])
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
             ],
             1
           )
@@ -82028,7 +82499,8 @@ var routes = [{
   path: '*',
   name: 'not-found',
   component: _components_NotFound__WEBPACK_IMPORTED_MODULE_2__["default"],
-  showInToolbar: false
+  showInToolbar: false // todo сделать reset-password-page
+
 }];
 
 /***/ }),

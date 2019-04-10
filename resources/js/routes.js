@@ -69,4 +69,6 @@ export const routes = [
         component: NotFound,
         showInToolbar: false
     }
+
+    // todo сделать reset-password-page
 ];
