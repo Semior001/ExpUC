@@ -17,7 +17,20 @@
                                 :value="showAlert"
                                 type="error"
                         >
-                            {{ alertMessage }}
+                            <div
+                                v-if="alertMessage instanceof Array"
+                                >
+                                <div
+                                    v-for="message in alertMessage"
+                                    >
+                                    {{ message[0] }}
+                                </div>
+                            </div>
+                            <div
+                                v-else
+                                >
+                                {{ alertMessage }}
+                            </div>
                         </v-alert>
                         <v-layout justify-center>
                             <v-flex xs10 lg10>
@@ -89,7 +102,7 @@
                     email: s => s.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) != null || 'Enter a valid email'
                 },
                 showAlert: false,
-                alertMessage: ""
+                alertMessage: ''
             }
         },
         methods: {
@@ -105,10 +118,10 @@
                 let password = this.password;
                 let password_confirmation = this.passwordConfirmation;
 
-                this.$store.dispatch("REGISTER_REQUEST", { name, email, password, password_confirmation }).then(() => {
+                this.$store.dispatch('user/REGISTER_REQUEST', { name, email, password, password_confirmation }).then(() => {
                     this.$router.push('/')
                 }).catch(err => {
-                    this.alertMessage = err.toString() + " Please, contact with administrator.";
+                    this.alertMessage = Object.values(err.response.data.message);
                     this.showAlert = true;
                 });
             }

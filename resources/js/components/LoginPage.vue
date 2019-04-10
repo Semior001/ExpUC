@@ -77,7 +77,7 @@
                 },
                 showPassword: false,
                 showAlert: false,
-                alertMessage: ""
+                alertMessage: ''
             }
         },
         methods: {
@@ -91,7 +91,7 @@
                 let email = this.email;
                 let password = this.password;
 
-                this.$store.dispatch("AUTH_REQUEST", { email, password }).then(() => {
+                this.$store.dispatch('user/AUTH_REQUEST', { email, password }).then(() => {
                     this.$router.push('/')
                 }).catch(err => {
                     this.alertMessage = err.response.data.message;

@@ -10,11 +10,11 @@ class ApiRegisterController extends RegisterController
 {
     public function register(Request $request)
     {
-        $errors = $this->validator($request->all())->errors();
+        $errors = $this->validator($request->all())->messages();
 
         if(count($errors))
         {
-            return response(['errors' => $errors], 401);
+            return response()->json(['message' => $errors])->setStatusCode(400);
         }
 
         event(new Registered($user = $this->create($request->all())));

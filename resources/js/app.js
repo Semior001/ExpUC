@@ -5,7 +5,7 @@ import Vuex from 'vuex';
 import Vuetify from 'vuetify';
 import MainApp from './components/MainApp.vue';
 import {routes} from './routes.js';
-import {store} from './store.js';
+import store from './store/index.js';
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
@@ -20,6 +20,13 @@ Vue.use(Vuetify, {
     }
 });
 
+const token = store.getters['user/token'];
+
+
+if (token) {
+    axios.defaults.headers.common['Authorization'] = "Bearer " + token;
+}
+
 const router = new VueRouter({
     routes,
     mode: 'history'
@@ -33,11 +40,3 @@ const app = new Vue({
         MainApp
     },
 });
-
-const token = localStorage.getItem("user-token");
-
-if (token) {
-    axios.defaults.headers.common['Authorization'] = "Bearer " + token
-}
-
-app.$store.getters.userData;
