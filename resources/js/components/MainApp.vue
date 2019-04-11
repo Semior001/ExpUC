@@ -25,3 +25,9 @@
         }
     }
 </script>
+
+<style>
+    button:focus {
+        outline: 0 !important;
+    }
+</style>

@@ -3,10 +3,16 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class Subject extends Model
 {
     protected $guarded = [];
+
+    protected static $rules = [
+        'weekday' => 'required|integer|between:0,6'
+    ];
 
     public function getTelegramGroups(){
         if($this->telegram_groups === null || $this->telegram_groups === "")
@@ -34,6 +40,20 @@ class Subject extends Model
 
     public function users(){
         return $this->belongsToMany(User::class, 'subject_user');
+    }
+
+    public function save(array $options = [])
+    {
+        $validation = Validator::make(
+            $this->getArrayableAttributes(),
+            static::$rules
+        );
+
+        if($validation->fails()){
+            throw new ValidationException($validation);
+        }
+
+        return parent::save($options);
     }
 
 }

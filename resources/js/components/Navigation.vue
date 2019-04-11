@@ -2,8 +2,9 @@
     <div>
         <v-navigation-drawer
                 v-model="drawer"
-                absolute
-                dark
+                :app="!this.$vuetify.breakpoint.xs && !this.$vuetify.breakpoint.sm"
+                :absolute="this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm"
+                :temporary="this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm"
         >
 
             <v-list class="pa-1">
@@ -18,7 +19,7 @@
                         <v-btn text block depressed to="/profile">Edit profile</v-btn>
                     </v-list-tile-content>
 
-                    <v-list-tile-action>
+                    <v-list-tile-action v-show="this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm">
                         <v-btn icon @click.stop="drawer = !drawer">
                             <v-icon>chevron_left</v-icon>
                         </v-btn>
@@ -58,7 +59,7 @@
 
         </v-navigation-drawer>
 
-        <v-toolbar>
+        <v-toolbar app>
             <v-toolbar-side-icon
                     @click.stop="drawer = !drawer"
             ></v-toolbar-side-icon>
@@ -74,8 +75,9 @@
                        v-for="item in items"
                        :key="item.title"
                        @click.end="item.action"
+                       :large="item.title.length > 8"
                 >
-                    <v-icon>{{ item.icon }}</v-icon> {{ item.title }}
+                    <v-icon v-show="item.title.length <= 8">{{ item.icon }}</v-icon> {{ item.title }}
                 </v-btn>
                 <v-btn text block depressed @click.end="logout">Logout</v-btn>
             </v-toolbar-items>
@@ -90,12 +92,12 @@
             return {
                 userName: '',
                 userSurname: '',
-                drawer: false,
+                drawer: true,
                 items: [],
                 userAvatarUrl: ''
             }
         },
-        mounted() {
+        created() {
             this.$store.dispatch('user/LOAD_USER_DATA').then(() => {
                 this.userName = this.$store.getters['user/name'];
                 this.userSurname = this.$store.getters['user/surname'];
@@ -110,6 +112,10 @@
                     })
                 }
             })
+
+            if(this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm)
+                this.drawer = false;
+
         },
         methods: {
             logout: function(){

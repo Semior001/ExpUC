@@ -59,7 +59,7 @@ const actions = {
     "AUTH_REQUEST": ({commit, dispatch}, user) => {
         return new Promise((resolve, reject) => { // The Promise used for router redirect in login
             commit("AUTH_REQUEST");
-            axios({url: 'api/login', data: user, method: 'POST'})
+            axios({url: '/api/login', data: user, method: 'POST'})
                 .then(response => {
                     if(response.status === 200) {
                         const token = response.data.api_token;
@@ -86,7 +86,7 @@ const actions = {
     "REGISTER_REQUEST": ({commit, dispatch}, user) => {
         return new Promise((resolve, reject) => {
             commit("AUTH_REQUEST");
-            axios({url: 'api/register', data:user, method: 'POST'})
+            axios({url: '/api/register', data:user, method: 'POST'})
                 .then(response => {
                     if(response.status === 200){
                         const token = response.data.api_token;
@@ -106,7 +106,7 @@ const actions = {
     },
     "LOAD_USER_DATA": ({commit, dispatch}) => {
         return new Promise(function(resolve, reject){
-            axios({url: 'api/user/getBasicUserData', method: 'GET'})
+            axios({url: '/api/user/getBasicUserData', method: 'GET'})
                 .then(response => {
                     if(response.status === 200) {
                         const userData = response.data;
@@ -115,7 +115,7 @@ const actions = {
                             name: userData['name'],
                             surname: userData['surname'],
                             telegram: userData['telegram'],
-                            avatar: userData['avatar'],
+                            avatar: '/' + userData['avatar'],
                             showSchedule: userData['showSchedule']
                         });
                         resolve(response);

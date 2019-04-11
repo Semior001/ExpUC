@@ -2,118 +2,119 @@
     <div>
         <Navigation />
 
-        <v-layout align-center justify-center row full-height>
-            <v-flex xs10 lg8 pt-5>
-                <v-card>
-                    <v-card-title>
-                        <v-layout justify-center>
-                            <span class="headline">Profile</span>
-                        </v-layout>
-                    </v-card-title>
-                    <v-container>
-                        <v-form
-                                ref="form"
-                                lazy-validation
-                                @submit.prevent="onSubmit"
-                        >
+        <v-content>
+            <v-layout align-center justify-center row full-height>
+                <v-flex xs10 lg8 pt-5>
+                    <v-card>
+                        <v-card-title>
                             <v-layout justify-center>
-                                <v-flex xs10 lg10>
-                                    <v-alert
-                                            class="mb-5"
-                                            :value="!!alertMessage"
-                                            :type="alertMessageType">
-                                        {{ alertMessage }}
-                                    </v-alert>
-                                    <v-text-field
-                                            v-model="email"
-                                            label="Email (cannot be edited)"
-                                            disabled>
-                                    </v-text-field>
-                                    <v-text-field
-                                            required
-                                            name="name"
-                                            v-model="name"
-                                            label="Name"
-                                            :rules="[rules.required]">
-                                    </v-text-field>
-                                    <v-text-field
-                                            required
-                                            name="surname"
-                                            v-model="surname"
-                                            label="Surname">
-                                    </v-text-field>
-
-                                    <v-divider></v-divider>
-
-                                    <div class="row">
-                                        <div id="previewAvatarContainer" class="col-lg-6">
-                                            <img v-if="previewAvatarUrl" :src="previewAvatarUrl" alt="whoops">
-                                            <input name="avatar" @change="previewAvatar" ref="uploadAvatarInput" type="file" hidden accept="image/*">
-                                            <v-btn class="ml-5" @click="startFileDialog" color="primary">Upload avatar</v-btn>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <v-checkbox
-                                                    v-model="showSchedule"
-                                                    :label="`Show my schedule to others`"
-                                            ></v-checkbox>
-                                        </div>
-                                    </div>
-
-                                    <v-divider></v-divider>
-
-                                    <v-layout justify-center>
-                                        <v-subheader class="green--text">
-                                            Please, provide your telegram nickname for better communication
-                                        </v-subheader>
-                                    </v-layout>
-                                    <v-text-field
-                                            autocomplete="username"
-                                            lg8
-                                            required
-                                            name="telegram"
-                                            v-model="telegram"
-                                            label="Telegram Nickname">
-                                    </v-text-field>
-
-                                    <v-divider></v-divider>
-
-                                    <v-text-field
-                                            autocomplete="new-password"
-                                            name="current_password"
-                                            v-model="currentPassword"
-                                            label="Current password"
-                                            :type="'password'"
-                                    >
-                                    </v-text-field>
-
-                                    <v-text-field
-                                            autocomplete="new-password"
-                                            name="password"
-                                            v-model="password"
-                                            label="Password"
-                                            :type="'password'"
-                                    >
-                                    </v-text-field>
-
-                                    <v-text-field
-                                            autocomplete="new-password"
-                                            name="password_confirmation"
-                                            v-model="passwordConfirmation"
-                                            label="Password confirmation"
-                                            :type="'password'"
-                                    >
-                                    </v-text-field>
-                                </v-flex>
+                                <span class="headline">Profile</span>
                             </v-layout>
-                            <v-layout justify-center>
-                                <v-btn type="submit" color="success">Save</v-btn>
-                            </v-layout>
-                        </v-form>
-                    </v-container>
-                </v-card>
-            </v-flex>
-        </v-layout>
+                        </v-card-title>
+                        <v-container>
+                            <v-form
+                                    ref="form"
+                                    lazy-validation
+                                    @submit.prevent="onSubmit"
+                            >
+                                <v-layout justify-center>
+                                    <v-flex xs10 lg10>
+                                        <v-alert
+                                                class="mb-5"
+                                                :value="!!alertMessage"
+                                                :type="alertMessageType">
+                                            {{ alertMessage }}
+                                        </v-alert>
+                                        <v-text-field
+                                                v-model="email"
+                                                label="Email (cannot be edited)"
+                                                disabled>
+                                        </v-text-field>
+                                        <v-text-field
+                                                required
+                                                name="name"
+                                                v-model="name"
+                                                label="Name"
+                                                :rules="[rules.required]">
+                                        </v-text-field>
+                                        <v-text-field
+                                                required
+                                                name="surname"
+                                                v-model="surname"
+                                                label="Surname">
+                                        </v-text-field>
 
+                                        <v-divider></v-divider>
+
+                                        <div class="row">
+                                            <div id="previewAvatarContainer" class="col-lg-6">
+                                                <img v-if="previewAvatarUrl" :src="previewAvatarUrl" alt="whoops">
+                                                <input name="avatar" @change="previewAvatar" ref="uploadAvatarInput" type="file" hidden accept="image/*">
+                                                <v-btn class="ml-3" @click="startFileDialog" color="primary">Upload avatar</v-btn>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <v-checkbox
+                                                        v-model="showSchedule"
+                                                        :label="`Show my schedule to others`"
+                                                ></v-checkbox>
+                                            </div>
+                                        </div>
+
+                                        <v-divider></v-divider>
+
+                                        <v-layout justify-center>
+                                            <v-subheader class="green--text">
+                                                Please, provide your telegram nickname for better communication
+                                            </v-subheader>
+                                        </v-layout>
+                                        <v-text-field
+                                                autocomplete="username"
+                                                lg8
+                                                required
+                                                name="telegram"
+                                                v-model="telegram"
+                                                label="Telegram Nickname">
+                                        </v-text-field>
+
+                                        <v-divider></v-divider>
+
+                                        <v-text-field
+                                                autocomplete="new-password"
+                                                name="current_password"
+                                                v-model="currentPassword"
+                                                label="Current password"
+                                                :type="'password'"
+                                        >
+                                        </v-text-field>
+
+                                        <v-text-field
+                                                autocomplete="new-password"
+                                                name="password"
+                                                v-model="password"
+                                                label="Password"
+                                                :type="'password'"
+                                        >
+                                        </v-text-field>
+
+                                        <v-text-field
+                                                autocomplete="new-password"
+                                                name="password_confirmation"
+                                                v-model="passwordConfirmation"
+                                                label="Password confirmation"
+                                                :type="'password'"
+                                        >
+                                        </v-text-field>
+                                    </v-flex>
+                                </v-layout>
+                                <v-layout justify-center>
+                                    <v-btn type="submit" color="success">Save</v-btn>
+                                </v-layout>
+                            </v-form>
+                        </v-container>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+        </v-content>
     </div>
 </template>
 
@@ -171,7 +172,7 @@
                     data.append('avatar', this.$refs.uploadAvatarInput.files[0]);
 
                 axios({
-                    url: 'api/user/update',
+                    url: '/api/user/update',
                     method: 'POST',
                     data: data
                 }).then(response => {

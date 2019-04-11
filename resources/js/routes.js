@@ -1,10 +1,11 @@
-import Home from "./components/Home";
-import LoginPage from "./components/LoginPage";
-import NotFound from "./components/NotFound";
-import RegisterPage from "./components/RegisterPage";
-import Schedule from "./components/Schedule";
+import Home from './components/Home';
+import LoginPage from './components/LoginPage';
+import NotFound from './components/NotFound';
+import RegisterPage from './components/RegisterPage';
+import Schedule from './components/Schedule';
 import store from './store/index'
-import Profile from "./components/Profile";
+import Profile from './components/Profile';
+import AddNewSubject from './components/AddNewSubject';
 
 const ifNotAuthenticated = (to, from, next) => {
     if (!store.getters['user/isAuthenticated']) {
@@ -22,6 +23,10 @@ const ifAuthenticated = (to, from, next) => {
     next('/login')
 };
 
+const desktopOnly = (to, from, next) => {
+    return !this.$vuetify.breakpoint.sm && !this.$vuetify.breakpoint.xs;
+}
+
 export const routes = [
     {
         title: 'Home',
@@ -36,6 +41,14 @@ export const routes = [
         path: '/schedule',
         component: Schedule,
         beforeEnter: ifAuthenticated
+    },
+    {
+        title: 'Add new subject',
+        icon: 'add_circle',
+        path: '/schedule/subjects/add',
+        component: AddNewSubject,
+        beforeEnter: ifAuthenticated,
+        showInToolbar: desktopOnly
     },
     {
         title: 'Login',
