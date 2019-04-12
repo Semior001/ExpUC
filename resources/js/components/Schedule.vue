@@ -1,9 +1,5 @@
 <template>
     <div>
-
-        <Navigation />
-
-        <!--Body-->
         <v-content>
             <v-layout class="hidden-sm-and-down" align-center justify-center row full-height>
                 <v-flex xs10 lg8 pt-5>
@@ -102,12 +98,8 @@
 </template>
 
 <script>
-    import Navigation from './Navigation'
     export default {
         name: 'Schedule',
-        components: {
-            Navigation
-        },
         data: () => ({
             today: '2019-01-08',
             events: [

@@ -1,7 +1,5 @@
 <template>
     <div>
-        <Navigation />
-
         <v-content>
             <v-layout align-center justify-center row full-height>
                 <v-flex xs10 lg8 pt-5>
@@ -119,13 +117,9 @@
 </template>
 
 <script>
-    import Navigation from './Navigation';
     import * as axios from "axios";
 
     export default {
-        components: {
-            Navigation,
-        },
         data: function(){
             return {
                 alertMessage: '',
@@ -171,11 +165,7 @@
                 if(this.$refs.uploadAvatarInput.files.length)
                     data.append('avatar', this.$refs.uploadAvatarInput.files[0]);
 
-                axios({
-                    url: '/api/user/update',
-                    method: 'POST',
-                    data: data
-                }).then(response => {
+                axios({url: '/api/user/update', method: 'POST', data: data}).then(response => {
                     if(response.status === 200){
                         this.alertMessageType = 'success';
                         this.alertMessage = 'Success! Your profile data has been updated!';

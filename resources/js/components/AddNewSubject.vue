@@ -1,6 +1,5 @@
 <template>
     <div>
-        <Navigation />
         <v-content>
             <v-layout align-center justify-center row full-height>
                 <v-flex xs10 lg8 pt-5>
@@ -154,8 +153,6 @@
     </div>
 </template>
 <script>
-    import Navigation from './Navigation';
-
     export default{
         name: 'AddNewSubject',
         data: function(){
@@ -267,9 +264,6 @@
                 // todo add teacher choose and
 
             };
-        },
-        components: {
-            Navigation
         },
         methods: {
             onSubmit(){

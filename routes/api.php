@@ -16,6 +16,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+//use Illuminate\Support\Facades\Artisan;
+//Route::get('migrate_database',function(){
+//    $var = Artisan::call('migrate');
+//    return json_encode($var);
+//});
+
+//Route::get('link_storage', function(){
+//    $var = Artisan::call('storage:link');
+//    return json_encode($var);
+//});
+
 Route::post('register', 'ApiRegisterController@register');
 Route::post('login', 'ApiLoginController@login');
 

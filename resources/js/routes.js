@@ -29,6 +29,7 @@ const desktopOnly = (to, from, next) => {
 
 export const routes = [
     {
+        name: 'home',
         title: 'Home',
         icon: 'dashboard',
         path: '/',
@@ -36,6 +37,7 @@ export const routes = [
         beforeEnter: ifAuthenticated
     },
     {
+        name: 'schedule',
         title: 'Schedule',
         icon: 'calendar_today',
         path: '/schedule',
@@ -43,6 +45,7 @@ export const routes = [
         beforeEnter: ifAuthenticated
     },
     {
+        name: 'add-new-subject',
         title: 'Add new subject',
         icon: 'add_circle',
         path: '/schedule/subjects/add',
@@ -51,22 +54,27 @@ export const routes = [
         showInToolbar: desktopOnly
     },
     {
+        name: 'login',
         title: 'Login',
         icon: '',
         path: '/login',
         component: LoginPage,
         beforeEnter: ifNotAuthenticated,
-        showInToolbar: false
+        showInToolbar: false,
+        doNotShowNavigation: true
     },
     {
+        name: 'register',
         title: 'Register',
         icon: '',
         path: '/register',
         component: RegisterPage,
         beforeEnter: ifNotAuthenticated,
-        showInToolbar: false
+        showInToolbar: false,
+        doNotShowNavigation: true
     },
     {
+        name: 'profile',
         title: 'Profile',
         icon: 'account_box',
         path: '/profile',
@@ -75,12 +83,13 @@ export const routes = [
         showInToolbar: false
     },
     {
+        name: 'not-found',
         title: '404 - Not found',
         icon: '',
         path: '*',
-        name: 'not-found',
         component: NotFound,
-        showInToolbar: false
+        showInToolbar: false,
+        doNotShowNavigation: true
     }
 
     // todo сделать reset-password-page

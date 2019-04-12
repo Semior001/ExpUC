@@ -1763,7 +1763,6 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Navigation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Navigation */ "./resources/js/components/Navigation.vue");
 //
 //
 //
@@ -1918,8 +1917,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'AddNewSubject',
   data: function data() {
@@ -2009,9 +2006,6 @@ __webpack_require__.r(__webpack_exports__);
 
     };
   },
-  components: {
-    Navigation: _Navigation__WEBPACK_IMPORTED_MODULE_0__["default"]
-  },
   methods: {
     onSubmit: function onSubmit() {}
   },
@@ -2033,7 +2027,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Navigation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Navigation */ "./resources/js/components/Navigation.vue");
 //
 //
 //
@@ -2103,13 +2096,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Home',
-  components: {
-    Navigation: _Navigation__WEBPACK_IMPORTED_MODULE_0__["default"]
-  },
   data: function data() {
     return {
       'userEmail': '',
@@ -2215,8 +2203,8 @@ __webpack_require__.r(__webpack_exports__);
         }
       },
       showPassword: false,
-      showAlert: false,
-      alertMessage: ''
+      alertMessage: '',
+      alertMessageType: 'warning'
     };
   },
   methods: {
@@ -2229,16 +2217,18 @@ __webpack_require__.r(__webpack_exports__);
         return;
       }
 
+      this.alertMessageType = 'warning';
+      this.alertMessage = 'Processing... Please wait...';
       var email = this.email;
       var password = this.password;
       this.$store.dispatch('user/AUTH_REQUEST', {
         email: email,
         password: password
       }).then(function () {
-        _this.$router.push('/');
+        _this.$router.go();
       })["catch"](function (err) {
+        _this.alertMessageType = 'error';
         _this.alertMessage = err.response.data.message;
-        _this.showAlert = true;
       });
     }
   }
@@ -2257,6 +2247,11 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Navigation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Navigation */ "./resources/js/components/Navigation.vue");
+//
+//
+//
+//
 //
 //
 //
@@ -2264,9 +2259,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'main-app',
+  components: {
+    Navigation: _Navigation__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  data: function data() {
+    return {
+      showNavigation: true
+    };
+  },
   created: function created() {
+    var _this = this;
+
+    this.$router.options.routes.forEach(function (route) {
+      if (_this.$route.name === route.name && !!route.doNotShowNavigation) {
+        _this.showNavigation = false;
+      }
+    });
     var store = this.$store;
     var router = this.$router;
     axios__WEBPACK_IMPORTED_MODULE_0__["interceptors"].response.use(undefined, function (err) {
@@ -2465,9 +2476,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Navigation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Navigation */ "./resources/js/components/Navigation.vue");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -2586,14 +2596,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  components: {
-    Navigation: _Navigation__WEBPACK_IMPORTED_MODULE_0__["default"]
-  },
   data: function data() {
     return {
       alertMessage: '',
@@ -2642,7 +2646,7 @@ __webpack_require__.r(__webpack_exports__);
       data.append('password_confirmation', this.passwordConfirmation);
       data.append('show_schedule', this.showSchedule ? '1' : '0');
       if (this.$refs.uploadAvatarInput.files.length) data.append('avatar', this.$refs.uploadAvatarInput.files[0]);
-      axios__WEBPACK_IMPORTED_MODULE_1__({
+      axios__WEBPACK_IMPORTED_MODULE_0__({
         url: '/api/user/update',
         method: 'POST',
         data: data
@@ -2777,6 +2781,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'register-page',
   data: function data() {
@@ -2784,6 +2800,8 @@ __webpack_require__.r(__webpack_exports__);
       email: '',
       name: '',
       password: '',
+      surname: '',
+      telegram: '',
       passwordConfirmation: '',
       rules: {
         required: function required(value) {
@@ -2797,14 +2815,16 @@ __webpack_require__.r(__webpack_exports__);
         }
       },
       showAlert: false,
-      alertMessage: ''
+      alertMessage: '',
+      alertMessageType: 'warning'
     };
   },
   methods: {
     validateAndSubmit: function validateAndSubmit() {
       var _this = this;
 
-      this.showAlert = false; // если какое-то поле введено не правильно
+      this.alertMessageType = 'warning';
+      this.alertMessage = 'Processing... Please wait...'; // если какое-то поле введено не правильно
 
       if (!this.$refs.form.validate()) {
         return;
@@ -2814,16 +2834,20 @@ __webpack_require__.r(__webpack_exports__);
       var email = this.email;
       var password = this.password;
       var password_confirmation = this.passwordConfirmation;
+      var telegram = this.telegram;
+      var surname = this.surname;
       this.$store.dispatch('user/REGISTER_REQUEST', {
         name: name,
+        surname: surname,
+        telegram: telegram,
         email: email,
         password: password,
         password_confirmation: password_confirmation
       }).then(function () {
-        _this.$router.push('/');
+        _this.$router.go();
       })["catch"](function (err) {
+        _this.alertMessageType = 'error';
         _this.alertMessage = Object.values(err.response.data.message);
-        _this.showAlert = true;
       });
     }
   }
@@ -2840,7 +2864,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Navigation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Navigation */ "./resources/js/components/Navigation.vue");
 //
 //
 //
@@ -2940,16 +2963,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Schedule',
-  components: {
-    Navigation: _Navigation__WEBPACK_IMPORTED_MODULE_0__["default"]
-  },
   data: function data() {
     return {
       today: '2019-01-08',
@@ -38753,8 +38768,6 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("Navigation"),
-      _vm._v(" "),
       _c(
         "v-content",
         [
@@ -39311,8 +39324,6 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("Navigation"),
-      _vm._v(" "),
       _c(
         "v-content",
         [
@@ -39587,7 +39598,12 @@ var render = function() {
                     [
                       _c(
                         "v-alert",
-                        { attrs: { value: _vm.showAlert, type: "error" } },
+                        {
+                          attrs: {
+                            value: !!_vm.alertMessage,
+                            type: _vm.alertMessageType
+                          }
+                        },
                         [
                           _vm._v(
                             "\n                        " +
@@ -39738,7 +39754,16 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("v-app", { attrs: { dark: "" } }, [_c("router-view")], 1)
+  return _c(
+    "v-app",
+    { attrs: { dark: "" } },
+    [
+      _vm.showNavigation ? _c("Navigation") : _vm._e(),
+      _vm._v(" "),
+      _c("router-view")
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -40177,8 +40202,6 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("Navigation"),
-      _vm._v(" "),
       _c(
         "v-content",
         [
@@ -40569,9 +40592,15 @@ var render = function() {
                     [
                       _c(
                         "v-alert",
-                        { attrs: { value: _vm.showAlert, type: "error" } },
+                        {
+                          attrs: {
+                            value: !!_vm.alertMessage,
+                            type: _vm.alertMessageType
+                          }
+                        },
                         [
-                          _vm.alertMessage instanceof Array
+                          _vm.alertMessage instanceof Array &&
+                          !(_vm.alertMessage instanceof String)
                             ? _c(
                                 "div",
                                 _vm._l(_vm.alertMessage, function(message) {
@@ -40618,6 +40647,17 @@ var render = function() {
                               }),
                               _vm._v(" "),
                               _c("v-text-field", {
+                                attrs: { label: "Surname (optional)" },
+                                model: {
+                                  value: _vm.surname,
+                                  callback: function($$v) {
+                                    _vm.surname = $$v
+                                  },
+                                  expression: "surname"
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("v-text-field", {
                                 attrs: {
                                   label: "Email",
                                   rules: [_vm.rules.required, _vm.rules.email]
@@ -40628,6 +40668,19 @@ var render = function() {
                                     _vm.email = $$v
                                   },
                                   expression: "email"
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("v-text-field", {
+                                attrs: {
+                                  label: "Telegram nickname (optional)"
+                                },
+                                model: {
+                                  value: _vm.telegram,
+                                  callback: function($$v) {
+                                    _vm.telegram = $$v
+                                  },
+                                  expression: "telegram"
                                 }
                               }),
                               _vm._v(" "),
@@ -40758,8 +40811,6 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("Navigation"),
-      _vm._v(" "),
       _c(
         "v-content",
         [
@@ -83528,18 +83579,21 @@ var desktopOnly = function desktopOnly(to, from, next) {
 };
 
 var routes = [{
+  name: 'home',
   title: 'Home',
   icon: 'dashboard',
   path: '/',
   component: _components_Home__WEBPACK_IMPORTED_MODULE_0__["default"],
   beforeEnter: ifAuthenticated
 }, {
+  name: 'schedule',
   title: 'Schedule',
   icon: 'calendar_today',
   path: '/schedule',
   component: _components_Schedule__WEBPACK_IMPORTED_MODULE_4__["default"],
   beforeEnter: ifAuthenticated
 }, {
+  name: 'add-new-subject',
   title: 'Add new subject',
   icon: 'add_circle',
   path: '/schedule/subjects/add',
@@ -83547,20 +83601,25 @@ var routes = [{
   beforeEnter: ifAuthenticated,
   showInToolbar: desktopOnly
 }, {
+  name: 'login',
   title: 'Login',
   icon: '',
   path: '/login',
   component: _components_LoginPage__WEBPACK_IMPORTED_MODULE_1__["default"],
   beforeEnter: ifNotAuthenticated,
-  showInToolbar: false
+  showInToolbar: false,
+  doNotShowNavigation: true
 }, {
+  name: 'register',
   title: 'Register',
   icon: '',
   path: '/register',
   component: _components_RegisterPage__WEBPACK_IMPORTED_MODULE_3__["default"],
   beforeEnter: ifNotAuthenticated,
-  showInToolbar: false
+  showInToolbar: false,
+  doNotShowNavigation: true
 }, {
+  name: 'profile',
   title: 'Profile',
   icon: 'account_box',
   path: '/profile',
@@ -83568,12 +83627,13 @@ var routes = [{
   beforeEnter: ifAuthenticated,
   showInToolbar: false
 }, {
+  name: 'not-found',
   title: '404 - Not found',
   icon: '',
   path: '*',
-  name: 'not-found',
   component: _components_NotFound__WEBPACK_IMPORTED_MODULE_2__["default"],
-  showInToolbar: false // todo сделать reset-password-page
+  showInToolbar: false,
+  doNotShowNavigation: true // todo сделать reset-password-page
 
 }];
 

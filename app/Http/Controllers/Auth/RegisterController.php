@@ -66,6 +66,8 @@ class RegisterController extends Controller
     {
         return User::create([
             'name' => $data['name'],
+            'surname' => array_key_exists('surname', $data) ? $data['surname'] : '',
+            'telegram' => array_key_exists('telegram', $data) ? $data['telegram'] : '',
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'api_token' => Str::random(60),

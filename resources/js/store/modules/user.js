@@ -86,7 +86,7 @@ const actions = {
     "REGISTER_REQUEST": ({commit, dispatch}, user) => {
         return new Promise((resolve, reject) => {
             commit("AUTH_REQUEST");
-            axios({url: '/api/register', data:user, method: 'POST'})
+            axios({url: '/api/register', data: user, method: 'POST'})
                 .then(response => {
                     if(response.status === 200){
                         const token = response.data.api_token;

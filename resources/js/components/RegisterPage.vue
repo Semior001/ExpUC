@@ -14,11 +14,11 @@
                             @submit.prevent="validateAndSubmit"
                     >
                         <v-alert
-                                :value="showAlert"
-                                type="error"
+                                :value="!!alertMessage"
+                                :type="alertMessageType"
                         >
                             <div
-                                v-if="alertMessage instanceof Array"
+                                v-if="alertMessage instanceof Array && !(alertMessage instanceof String)"
                                 >
                                 <div
                                     v-for="message in alertMessage"
@@ -42,9 +42,21 @@
                                 </v-text-field>
 
                                 <v-text-field
+                                        v-model="surname"
+                                        label="Surname (optional)"
+                                >
+                                </v-text-field>
+
+                                <v-text-field
                                         v-model="email"
                                         label="Email"
                                         :rules="[rules.required, rules.email]"
+                                >
+                                </v-text-field>
+
+                                <v-text-field
+                                        v-model="telegram"
+                                        label="Telegram nickname (optional)"
                                 >
                                 </v-text-field>
 
@@ -95,6 +107,8 @@
                 email: '',
                 name: '',
                 password: '',
+                surname: '',
+                telegram: '',
                 passwordConfirmation: '',
                 rules: {
                     required: value => !!value || 'Required.',
@@ -102,12 +116,16 @@
                     email: s => s.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) != null || 'Enter a valid email'
                 },
                 showAlert: false,
-                alertMessage: ''
+                alertMessage: '',
+                alertMessageType: 'warning',
             }
         },
         methods: {
             validateAndSubmit(){
-                this.showAlert = false;
+
+                this.alertMessageType = 'warning';
+                this.alertMessage = 'Processing... Please wait...';
+
                 // если какое-то поле введено не правильно
                 if (!this.$refs.form.validate()) {
                     return;
@@ -117,12 +135,14 @@
                 let email = this.email;
                 let password = this.password;
                 let password_confirmation = this.passwordConfirmation;
+                let telegram = this.telegram;
+                let surname = this.surname;
 
-                this.$store.dispatch('user/REGISTER_REQUEST', { name, email, password, password_confirmation }).then(() => {
-                    this.$router.push('/')
+                this.$store.dispatch('user/REGISTER_REQUEST', { name, surname, telegram, email, password, password_confirmation }).then(() => {
+                    this.$router.go();
                 }).catch(err => {
+                    this.alertMessageType = 'error';
                     this.alertMessage = Object.values(err.response.data.message);
-                    this.showAlert = true;
                 });
             }
         }

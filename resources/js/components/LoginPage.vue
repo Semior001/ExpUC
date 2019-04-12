@@ -14,8 +14,8 @@
                             @submit.prevent="validateAndSubmit"
                     >
                         <v-alert
-                                :value="showAlert"
-                                type="error"
+                                :value="!!alertMessage"
+                                :type="alertMessageType"
                         >
                             {{ alertMessage }}
                         </v-alert>
@@ -76,8 +76,8 @@
                     email: s => s.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) != null || 'Enter a valid email'
                 },
                 showPassword: false,
-                showAlert: false,
-                alertMessage: ''
+                alertMessage: '',
+                alertMessageType: 'warning'
             }
         },
         methods: {
@@ -88,14 +88,17 @@
                     return;
                 }
 
+                this.alertMessageType = 'warning';
+                this.alertMessage = 'Processing... Please wait...';
+
                 let email = this.email;
                 let password = this.password;
 
                 this.$store.dispatch('user/AUTH_REQUEST', { email, password }).then(() => {
-                    this.$router.push('/')
+                    this.$router.go();
                 }).catch(err => {
+                    this.alertMessageType='error';
                     this.alertMessage = err.response.data.message;
-                    this.showAlert = true;
                 });
             }
         }
