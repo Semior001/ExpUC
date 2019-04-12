@@ -2392,6 +2392,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -39791,9 +39793,142 @@ var render = function() {
     "div",
     [
       _c(
+        "v-toolbar",
+        { attrs: { app: "", dark: "", "clipped-left": "" } },
+        [
+          _c("v-toolbar-side-icon", {
+            on: {
+              click: function($event) {
+                $event.stopPropagation()
+                _vm.drawer = !_vm.drawer
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("v-toolbar-title", [_vm._v("ExpUC")]),
+          _vm._v(" "),
+          _c("v-spacer"),
+          _vm._v(" "),
+          _c(
+            "v-toolbar-items",
+            { staticClass: "hidden-sm-and-down" },
+            [
+              _c(
+                "v-btn",
+                {
+                  attrs: { text: "", block: "", depressed: "" },
+                  on: {
+                    click: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k(
+                          $event.keyCode,
+                          "end",
+                          undefined,
+                          $event.key,
+                          undefined
+                        )
+                      ) {
+                        return null
+                      }
+                      return _vm.profile($event)
+                    }
+                  }
+                },
+                [
+                  _c("v-icon", [_vm._v("account_box")]),
+                  _vm._v(" Profile\n            ")
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _vm._l(_vm.items, function(item) {
+                return _c(
+                  "v-btn",
+                  {
+                    key: item.title,
+                    attrs: {
+                      text: "",
+                      block: "",
+                      depressed: "",
+                      large: item.title.length > 8
+                    },
+                    on: {
+                      click: function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k(
+                            $event.keyCode,
+                            "end",
+                            undefined,
+                            $event.key,
+                            undefined
+                          )
+                        ) {
+                          return null
+                        }
+                        return item.action($event)
+                      }
+                    }
+                  },
+                  [
+                    _c(
+                      "v-icon",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: item.title.length <= 8,
+                            expression: "item.title.length <= 8"
+                          }
+                        ]
+                      },
+                      [_vm._v(_vm._s(item.icon))]
+                    ),
+                    _vm._v(" " + _vm._s(item.title) + "\n            ")
+                  ],
+                  1
+                )
+              }),
+              _vm._v(" "),
+              _c(
+                "v-btn",
+                {
+                  attrs: { text: "", block: "", depressed: "" },
+                  on: {
+                    click: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k(
+                          $event.keyCode,
+                          "end",
+                          undefined,
+                          $event.key,
+                          undefined
+                        )
+                      ) {
+                        return null
+                      }
+                      return _vm.logout($event)
+                    }
+                  }
+                },
+                [_vm._v("Logout")]
+              )
+            ],
+            2
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
         "v-navigation-drawer",
         {
           attrs: {
+            clipped: "",
+            dark: "",
             app: !this.$vuetify.breakpoint.xs && !this.$vuetify.breakpoint.sm,
             absolute:
               this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm,
@@ -39967,137 +40102,6 @@ var render = function() {
                   )
                 ],
                 1
-              )
-            ],
-            2
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "v-toolbar",
-        { attrs: { app: "" } },
-        [
-          _c("v-toolbar-side-icon", {
-            on: {
-              click: function($event) {
-                $event.stopPropagation()
-                _vm.drawer = !_vm.drawer
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("v-toolbar-title", [_vm._v("ExpUC")]),
-          _vm._v(" "),
-          _c("v-spacer"),
-          _vm._v(" "),
-          _c(
-            "v-toolbar-items",
-            { staticClass: "hidden-sm-and-down" },
-            [
-              _c(
-                "v-btn",
-                {
-                  attrs: { text: "", block: "", depressed: "" },
-                  on: {
-                    click: function($event) {
-                      if (
-                        !$event.type.indexOf("key") &&
-                        _vm._k(
-                          $event.keyCode,
-                          "end",
-                          undefined,
-                          $event.key,
-                          undefined
-                        )
-                      ) {
-                        return null
-                      }
-                      return _vm.profile($event)
-                    }
-                  }
-                },
-                [
-                  _c("v-icon", [_vm._v("account_box")]),
-                  _vm._v(" Profile\n            ")
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _vm._l(_vm.items, function(item) {
-                return _c(
-                  "v-btn",
-                  {
-                    key: item.title,
-                    attrs: {
-                      text: "",
-                      block: "",
-                      depressed: "",
-                      large: item.title.length > 8
-                    },
-                    on: {
-                      click: function($event) {
-                        if (
-                          !$event.type.indexOf("key") &&
-                          _vm._k(
-                            $event.keyCode,
-                            "end",
-                            undefined,
-                            $event.key,
-                            undefined
-                          )
-                        ) {
-                          return null
-                        }
-                        return item.action($event)
-                      }
-                    }
-                  },
-                  [
-                    _c(
-                      "v-icon",
-                      {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value: item.title.length <= 8,
-                            expression: "item.title.length <= 8"
-                          }
-                        ]
-                      },
-                      [_vm._v(_vm._s(item.icon))]
-                    ),
-                    _vm._v(" " + _vm._s(item.title) + "\n            ")
-                  ],
-                  1
-                )
-              }),
-              _vm._v(" "),
-              _c(
-                "v-btn",
-                {
-                  attrs: { text: "", block: "", depressed: "" },
-                  on: {
-                    click: function($event) {
-                      if (
-                        !$event.type.indexOf("key") &&
-                        _vm._k(
-                          $event.keyCode,
-                          "end",
-                          undefined,
-                          $event.key,
-                          undefined
-                        )
-                      ) {
-                        return null
-                      }
-                      return _vm.logout($event)
-                    }
-                  }
-                },
-                [_vm._v("Logout")]
               )
             ],
             2

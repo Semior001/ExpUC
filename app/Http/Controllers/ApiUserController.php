@@ -28,6 +28,8 @@ class ApiUserController extends Controller
 
         $user = $request->user();
 
+        $request->request->set('email', $user->email);
+
         if($request->get('password') != $request->get('password_confirmation')){
             return response()->json('Password confirmation does not match')->setStatusCode(400);
         }

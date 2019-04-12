@@ -1,6 +1,33 @@
 <template>
     <div>
+        <v-toolbar app dark clipped-left>
+            <v-toolbar-side-icon
+                    @click.stop="drawer = !drawer"
+            ></v-toolbar-side-icon>
+            <v-toolbar-title>ExpUC</v-toolbar-title>
+
+            <v-spacer></v-spacer>
+
+            <v-toolbar-items class="hidden-sm-and-down">
+                <v-btn text block depressed @click.end="profile">
+                    <v-icon>account_box</v-icon> Profile
+                </v-btn>
+                <v-btn text block depressed
+                       v-for="item in items"
+                       :key="item.title"
+                       @click.end="item.action"
+                       :large="item.title.length > 8"
+                >
+                    <v-icon v-show="item.title.length <= 8">{{ item.icon }}</v-icon> {{ item.title }}
+                </v-btn>
+                <v-btn text block depressed @click.end="logout">Logout</v-btn>
+            </v-toolbar-items>
+
+        </v-toolbar>
+
         <v-navigation-drawer
+                clipped
+                dark
                 v-model="drawer"
                 :app="!this.$vuetify.breakpoint.xs && !this.$vuetify.breakpoint.sm"
                 :absolute="this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm"
@@ -58,31 +85,6 @@
             </v-list>
 
         </v-navigation-drawer>
-
-        <v-toolbar app>
-            <v-toolbar-side-icon
-                    @click.stop="drawer = !drawer"
-            ></v-toolbar-side-icon>
-            <v-toolbar-title>ExpUC</v-toolbar-title>
-
-            <v-spacer></v-spacer>
-
-            <v-toolbar-items class="hidden-sm-and-down">
-                <v-btn text block depressed @click.end="profile">
-                    <v-icon>account_box</v-icon> Profile
-                </v-btn>
-                <v-btn text block depressed
-                       v-for="item in items"
-                       :key="item.title"
-                       @click.end="item.action"
-                       :large="item.title.length > 8"
-                >
-                    <v-icon v-show="item.title.length <= 8">{{ item.icon }}</v-icon> {{ item.title }}
-                </v-btn>
-                <v-btn text block depressed @click.end="logout">Logout</v-btn>
-            </v-toolbar-items>
-
-        </v-toolbar>
     </div>
 </template>
 
