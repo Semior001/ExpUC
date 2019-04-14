@@ -98,7 +98,7 @@
                     this.$router.go();
                 }).catch(err => {
                     this.alertMessageType='error';
-                    this.alertMessage = err.response.data.message;
+                    this.alertMessage = err;
                 });
             }
         }

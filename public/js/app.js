@@ -1917,6 +1917,39 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'AddNewSubject',
   data: function data() {
@@ -1953,11 +1986,6 @@ __webpack_require__.r(__webpack_exports__);
         text: 'Sunday',
         value: 6
       }],
-      name: '',
-      weekday: '',
-      startTime: '',
-      endTime: '',
-      place: '',
       newTeacherName: '',
       newTeacherSurname: '',
       newTeacherPatronymic: '',
@@ -1975,44 +2003,132 @@ __webpack_require__.r(__webpack_exports__);
         value: 'patronymic'
       }, {
         text: '',
-        value: ''
+        value: '',
+        sortable: false
       }],
-      selectedTeacher: null,
-      teachers: [{
-        name: 'Test1',
-        surname: 'Test1_s',
-        patronymic: 'Test1_p'
-      }, {
-        name: 'Test2',
-        surname: 'Test2_s',
-        patronymic: 'Test2_p'
-      }, {
-        name: 'Test3',
-        surname: 'Test3_s',
-        patronymic: 'Test3_p'
-      }, {
-        name: 'Test4',
-        surname: 'Test4_s',
-        patronymic: 'Test4_p'
-      }, {
-        name: 'Test5',
-        surname: 'Test5_s',
-        patronymic: 'Test5_p'
-      }, {
-        name: 'Test6',
-        surname: 'Test6_s',
-        patronymic: 'Test6_p'
-      }] // todo add teacher choose and
-
+      paginationTeachers: {},
+      loadingTeachers: false,
+      totalTeachers: 0,
+      teachers: [],
+      searchTeacher: '',
+      newTeacherAddDisabled: false,
+      name: '',
+      weekday: '',
+      startTime: '',
+      endTime: '',
+      place: '',
+      selectedTeacher: null
     };
   },
   methods: {
-    onSubmit: function onSubmit() {}
+    submitNewSubject: function submitNewSubject() {
+      var _this = this;
+
+      if (!this.$refs.form.validate() || !this.startTime || !this.endTime || !this.selectedTeacher) {
+        this.alertMessageType = 'error';
+        this.alertMessage = 'Oops! It looks like you forgot to write something...';
+        return;
+      }
+
+      axios({
+        url: '/api/subjects/add',
+        data: {
+          'name': this.name,
+          'weekday': this.weekday,
+          'start_time': this.startTime,
+          'end_time': this.endTime,
+          'place': this.place,
+          'selectedTeacher': this.selectedTeacher
+        },
+        method: 'POST'
+      }).then(function (response) {
+        if (response.status === 200) {
+          // todo скролл наверх и показ алерта об успешном создании предмета (очистка формы, возможно)
+          window.scrollTo(0, 0);
+          _this.alertMessageType = 'success';
+          _this.alertMessage = 'Success! Your subject has been saved! Go to your schedule to watch it';
+          return;
+        }
+
+        window.scrollTo(0, 0);
+        _this.alertMessageType = 'error';
+        _this.alertMessage = 'Oops! ' + response;
+      })["catch"](function (error) {
+        _this.alertMessageType = 'error';
+        _this.alertMessage = error;
+      });
+    },
+    getTeachers: function getTeachers() {
+      var _this2 = this;
+
+      this.loadingTeachers = true;
+      var _this$paginationTeach = this.paginationTeachers,
+          sortBy = _this$paginationTeach.sortBy,
+          descending = _this$paginationTeach.descending,
+          page = _this$paginationTeach.page,
+          rowsPerPage = _this$paginationTeach.rowsPerPage;
+      axios({
+        url: '/api/teachers/list?page=' + page + '&sortBy=' + sortBy + '&order=' + (descending ? 'desc' : 'asc') + '&itemsPerPage=' + rowsPerPage + '&search=' + this.searchTeacher,
+        method: 'GET'
+      }).then(function (response) {
+        if (response.status === 200) {
+          _this2.teachers = response.data.data;
+          _this2.totalTeachers = response.data.total;
+          return;
+        }
+
+        _this2.teachers = [];
+      })["catch"](function (error) {
+        _this2.teachers = [];
+      });
+      this.loadingTeachers = false;
+    },
+    addNewTeacher: function addNewTeacher() {
+      var _this3 = this;
+
+      if (!this.newTeacherPatronymic || !this.newTeacherSurname || !this.newTeacherName) return;
+      this.newTeacherAddDisabled = true;
+      axios({
+        url: '/api/teachers/add',
+        data: {
+          'name': this.newTeacherName,
+          'surname': this.newTeacherSurname,
+          'patronymic': this.newTeacherPatronymic
+        },
+        method: 'POST'
+      }).then(function (response) {
+        if (response.status === 200) {
+          _this3.newTeacherName = '';
+          _this3.newTeacherSurname = '';
+          _this3.newTeacherPatronymic = '';
+
+          _this3.getTeachers();
+
+          return;
+        }
+
+        alert(response.data);
+      })["catch"](function (error) {
+        alert(error);
+      });
+      this.newTeacherAddDisabled = false;
+    }
+  },
+  watch: {
+    paginationTeachers: {
+      handler: function handler() {
+        this.getTeachers();
+      },
+      deep: true
+    }
   },
   computed: {
     is_screen_small: function is_screen_small() {
       return this.$vuetify.breakpoint.sm || this.$vuetify.breakpoint.xs;
     }
+  },
+  mounted: function mounted() {
+    this.getTeachers();
   }
 });
 
@@ -2228,7 +2344,7 @@ __webpack_require__.r(__webpack_exports__);
         _this.$router.go();
       })["catch"](function (err) {
         _this.alertMessageType = 'error';
-        _this.alertMessage = err.response.data.message;
+        _this.alertMessage = err;
       });
     }
   }
@@ -2304,6 +2420,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -7449,6 +7567,25 @@ __webpack_require__.r(__webpack_exports__);
 
 }));
 //# sourceMappingURL=bootstrap.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.radio-group-full-width[data-v-7605cc12] .v-input__control {\n    width: 100%\n}\n", ""]);
+
+// exports
 
 
 /***/ }),
@@ -38108,6 +38245,36 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css&":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css& ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MainApp.vue?vue&type=style&index=0&lang=css&":
 /*!*****************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/MainApp.vue?vue&type=style&index=0&lang=css& ***!
@@ -38752,10 +38919,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&":
-/*!****************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12& ***!
-  \****************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&scoped=true&":
+/*!****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&scoped=true& ***!
+  \****************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -38814,7 +38981,7 @@ var render = function() {
                               on: {
                                 submit: function($event) {
                                   $event.preventDefault()
-                                  return _vm.onSubmit($event)
+                                  return _vm.submitNewSubject($event)
                                 }
                               }
                             },
@@ -38898,6 +39065,21 @@ var render = function() {
                                             _vm.weekday = $$v
                                           },
                                           expression: "weekday"
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("v-text-field", {
+                                        attrs: {
+                                          label:
+                                            "Place (A cabinet (or another kind of territory), where the lesson take place)",
+                                          rules: [_vm.rules.required]
+                                        },
+                                        model: {
+                                          value: _vm.place,
+                                          callback: function($$v) {
+                                            _vm.place = $$v
+                                          },
+                                          expression: "place"
                                         }
                                       }),
                                       _vm._v(" "),
@@ -39037,238 +39219,389 @@ var render = function() {
                                       ]),
                                       _vm._v(" "),
                                       _c(
-                                        "div",
-                                        { staticClass: "hidden-sm-and-down" },
+                                        "v-layout",
+                                        {
+                                          attrs: {
+                                            "justify-center": "",
+                                            "mt-5": ""
+                                          }
+                                        },
+                                        [_c("h3", [_vm._v("Teacher")])]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-layout",
+                                        {
+                                          staticClass: "green--text",
+                                          attrs: { "justify-center": "" }
+                                        },
+                                        [
+                                          _vm._v(
+                                            "\n                                        Please, firstly, try to find teacher in the list of existing teachers.\n                                    "
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-layout",
+                                        {
+                                          staticClass: "green--text",
+                                          attrs: { "justify-center": "" }
+                                        },
+                                        [
+                                          _c("b", [
+                                            _vm._v(
+                                              "Only in the case, if your teacher doesn't appear in the list, add him"
+                                            ),
+                                            _c("sup", [_vm._v("(her)")]),
+                                            _vm._v(" with him"),
+                                            _c("sup", [_vm._v("(her)")]),
+                                            _vm._v(" exact full name")
+                                          ])
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-form",
+                                        {
+                                          attrs: { id: "searchTeacherForm" },
+                                          on: {
+                                            submit: function($event) {
+                                              $event.preventDefault()
+                                              return _vm.getTeachers($event)
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              form: "searchTeacherForm",
+                                              label:
+                                                "Search teacher by name/surname/patronymic (press enter to run search)"
+                                            },
+                                            model: {
+                                              value: _vm.searchTeacher,
+                                              callback: function($$v) {
+                                                _vm.searchTeacher = $$v
+                                              },
+                                              expression: "searchTeacher"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-radio-group",
+                                        {
+                                          staticClass: "radio-group-full-width",
+                                          staticStyle: { overflow: "scroll" },
+                                          model: {
+                                            value: _vm.selectedTeacher,
+                                            callback: function($$v) {
+                                              _vm.selectedTeacher = $$v
+                                            },
+                                            expression: "selectedTeacher"
+                                          }
+                                        },
+                                        [
+                                          _c("v-data-table", {
+                                            attrs: {
+                                              headers: _vm.teacherTable_Headers,
+                                              items: _vm.teachers,
+                                              loading: _vm.loadingTeachers,
+                                              pagination:
+                                                _vm.paginationTeachers,
+                                              "total-items": _vm.totalTeachers
+                                            },
+                                            on: {
+                                              "update:pagination": function(
+                                                $event
+                                              ) {
+                                                _vm.paginationTeachers = $event
+                                              }
+                                            },
+                                            scopedSlots: _vm._u([
+                                              {
+                                                key: "no-data",
+                                                fn: function() {
+                                                  return [
+                                                    _c(
+                                                      "v-alert",
+                                                      {
+                                                        attrs: {
+                                                          value: true,
+                                                          color: "error",
+                                                          icon: "warning"
+                                                        }
+                                                      },
+                                                      [
+                                                        _vm._v(
+                                                          "\n                                                    Sorry, nothing to display here :(\n                                                "
+                                                        )
+                                                      ]
+                                                    )
+                                                  ]
+                                                },
+                                                proxy: true
+                                              },
+                                              {
+                                                key: "items",
+                                                fn: function(props) {
+                                                  return [
+                                                    _c("td", [
+                                                      _vm._v(
+                                                        _vm._s(props.item.name)
+                                                      )
+                                                    ]),
+                                                    _vm._v(" "),
+                                                    _c("td", [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          props.item.surname
+                                                        )
+                                                      )
+                                                    ]),
+                                                    _vm._v(" "),
+                                                    _c("td", [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          props.item.patronymic
+                                                        )
+                                                      )
+                                                    ]),
+                                                    _vm._v(" "),
+                                                    _c(
+                                                      "td",
+                                                      [
+                                                        _c("v-radio", {
+                                                          key: props.index,
+                                                          attrs: {
+                                                            value:
+                                                              props.item.id,
+                                                            primary: "",
+                                                            "hide-details": "",
+                                                            rules: [
+                                                              _vm.rules.required
+                                                            ]
+                                                          }
+                                                        })
+                                                      ],
+                                                      1
+                                                    )
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                key: "footer",
+                                                fn: function() {
+                                                  return [
+                                                    _c("tr", [
+                                                      _c(
+                                                        "td",
+                                                        [
+                                                          _c(
+                                                            "v-form",
+                                                            {
+                                                              staticClass:
+                                                                "newTeacherForm"
+                                                            },
+                                                            [
+                                                              _c(
+                                                                "v-text-field",
+                                                                {
+                                                                  staticClass:
+                                                                    "mt-3",
+                                                                  attrs: {
+                                                                    form:
+                                                                      "newTeacherForm",
+                                                                    rules: [
+                                                                      _vm.rules
+                                                                        .required
+                                                                    ]
+                                                                  },
+                                                                  model: {
+                                                                    value:
+                                                                      _vm.newTeacherName,
+                                                                    callback: function(
+                                                                      $$v
+                                                                    ) {
+                                                                      _vm.newTeacherName = $$v
+                                                                    },
+                                                                    expression:
+                                                                      "newTeacherName"
+                                                                  }
+                                                                }
+                                                              )
+                                                            ],
+                                                            1
+                                                          )
+                                                        ],
+                                                        1
+                                                      ),
+                                                      _vm._v(" "),
+                                                      _c(
+                                                        "td",
+                                                        [
+                                                          _c(
+                                                            "v-form",
+                                                            {
+                                                              staticClass:
+                                                                "newTeacherForm"
+                                                            },
+                                                            [
+                                                              _c(
+                                                                "v-text-field",
+                                                                {
+                                                                  staticClass:
+                                                                    "mt-3",
+                                                                  attrs: {
+                                                                    form:
+                                                                      "newTeacherForm",
+                                                                    rules: [
+                                                                      _vm.rules
+                                                                        .required
+                                                                    ]
+                                                                  },
+                                                                  model: {
+                                                                    value:
+                                                                      _vm.newTeacherSurname,
+                                                                    callback: function(
+                                                                      $$v
+                                                                    ) {
+                                                                      _vm.newTeacherSurname = $$v
+                                                                    },
+                                                                    expression:
+                                                                      "newTeacherSurname"
+                                                                  }
+                                                                }
+                                                              )
+                                                            ],
+                                                            1
+                                                          )
+                                                        ],
+                                                        1
+                                                      ),
+                                                      _vm._v(" "),
+                                                      _c(
+                                                        "td",
+                                                        [
+                                                          _c(
+                                                            "v-form",
+                                                            {
+                                                              staticClass:
+                                                                "newTeacherForm"
+                                                            },
+                                                            [
+                                                              _c(
+                                                                "v-text-field",
+                                                                {
+                                                                  staticClass:
+                                                                    "mt-3",
+                                                                  attrs: {
+                                                                    form:
+                                                                      "newTeacherForm",
+                                                                    rules: [
+                                                                      _vm.rules
+                                                                        .required
+                                                                    ]
+                                                                  },
+                                                                  model: {
+                                                                    value:
+                                                                      _vm.newTeacherPatronymic,
+                                                                    callback: function(
+                                                                      $$v
+                                                                    ) {
+                                                                      _vm.newTeacherPatronymic = $$v
+                                                                    },
+                                                                    expression:
+                                                                      "newTeacherPatronymic"
+                                                                  }
+                                                                }
+                                                              )
+                                                            ],
+                                                            1
+                                                          )
+                                                        ],
+                                                        1
+                                                      ),
+                                                      _vm._v(" "),
+                                                      _c(
+                                                        "td",
+                                                        [
+                                                          _c(
+                                                            "v-btn",
+                                                            {
+                                                              attrs: {
+                                                                disabled:
+                                                                  _vm.newTeacherAddDisabled,
+                                                                type: "button",
+                                                                color: "success"
+                                                              },
+                                                              on: {
+                                                                click: function(
+                                                                  $event
+                                                                ) {
+                                                                  if (
+                                                                    !$event.type.indexOf(
+                                                                      "key"
+                                                                    ) &&
+                                                                    _vm._k(
+                                                                      $event.keyCode,
+                                                                      "end",
+                                                                      undefined,
+                                                                      $event.key,
+                                                                      undefined
+                                                                    )
+                                                                  ) {
+                                                                    return null
+                                                                  }
+                                                                  return _vm.addNewTeacher(
+                                                                    $event
+                                                                  )
+                                                                }
+                                                              }
+                                                            },
+                                                            [
+                                                              _vm._v(
+                                                                "\n                                                            add\n                                                        "
+                                                              )
+                                                            ]
+                                                          )
+                                                        ],
+                                                        1
+                                                      )
+                                                    ])
+                                                  ]
+                                                },
+                                                proxy: true
+                                              }
+                                            ]),
+                                            model: {
+                                              value: _vm.teachers,
+                                              callback: function($$v) {
+                                                _vm.teachers = $$v
+                                              },
+                                              expression: "teachers"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-layout",
+                                        { attrs: { "justify-end": "" } },
                                         [
                                           _c(
-                                            "v-layout",
+                                            "v-btn",
                                             {
                                               attrs: {
-                                                "justify-center": "",
-                                                "mt-5": ""
+                                                type: "submit",
+                                                color: "success"
                                               }
                                             },
-                                            [_c("h3", [_vm._v("Teacher")])]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "v-layout",
-                                            {
-                                              staticClass: "green--text",
-                                              attrs: { "justify-center": "" }
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                            Please, firstly, try to find teacher in the list of existing teachers.\n                                        "
-                                              )
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "v-layout",
-                                            {
-                                              staticClass: "green--text",
-                                              attrs: { "justify-center": "" }
-                                            },
-                                            [
-                                              _c("b", [
-                                                _vm._v(
-                                                  "Only in the case, if your teacher doesn't appear in the list, add him"
-                                                ),
-                                                _c("sup", [_vm._v("(her)")]),
-                                                _vm._v(" with him"),
-                                                _c("sup", [_vm._v("(her)")]),
-                                                _vm._v(" exact full name")
-                                              ])
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "v-radio-group",
-                                            {
-                                              model: {
-                                                value: _vm.selectedTeacher,
-                                                callback: function($$v) {
-                                                  _vm.selectedTeacher = $$v
-                                                },
-                                                expression: "selectedTeacher"
-                                              }
-                                            },
-                                            [
-                                              _c("v-data-table", {
-                                                attrs: {
-                                                  headers:
-                                                    _vm.teacherTable_Headers,
-                                                  items: _vm.teachers,
-                                                  "pagination.rowsPerPage":
-                                                    "100000"
-                                                },
-                                                scopedSlots: _vm._u([
-                                                  {
-                                                    key: "items",
-                                                    fn: function(props) {
-                                                      return [
-                                                        _c("td", [
-                                                          _vm._v(
-                                                            _vm._s(
-                                                              props.item.name
-                                                            )
-                                                          )
-                                                        ]),
-                                                        _vm._v(" "),
-                                                        _c("td", [
-                                                          _vm._v(
-                                                            _vm._s(
-                                                              props.item.surname
-                                                            )
-                                                          )
-                                                        ]),
-                                                        _vm._v(" "),
-                                                        _c("td", [
-                                                          _vm._v(
-                                                            _vm._s(
-                                                              props.item
-                                                                .patronymic
-                                                            )
-                                                          )
-                                                        ]),
-                                                        _vm._v(" "),
-                                                        _c(
-                                                          "td",
-                                                          [
-                                                            _c("v-radio", {
-                                                              key: props.index,
-                                                              attrs: {
-                                                                value:
-                                                                  props.index,
-                                                                primary: "",
-                                                                "hide-details":
-                                                                  ""
-                                                              }
-                                                            })
-                                                          ],
-                                                          1
-                                                        )
-                                                      ]
-                                                    }
-                                                  },
-                                                  {
-                                                    key: "footer",
-                                                    fn: function() {
-                                                      return [
-                                                        _c(
-                                                          "td",
-                                                          [
-                                                            _c("v-text-field", {
-                                                              staticClass:
-                                                                "mt-3",
-                                                              attrs: {
-                                                                label:
-                                                                  "New Teacher's name"
-                                                              },
-                                                              model: {
-                                                                value:
-                                                                  _vm.newTeacherName,
-                                                                callback: function(
-                                                                  $$v
-                                                                ) {
-                                                                  _vm.newTeacherName = $$v
-                                                                },
-                                                                expression:
-                                                                  "newTeacherName"
-                                                              }
-                                                            })
-                                                          ],
-                                                          1
-                                                        ),
-                                                        _vm._v(" "),
-                                                        _c(
-                                                          "td",
-                                                          [
-                                                            _c("v-text-field", {
-                                                              staticClass:
-                                                                "mt-3",
-                                                              attrs: {
-                                                                label:
-                                                                  "New Teacher's surname"
-                                                              },
-                                                              model: {
-                                                                value:
-                                                                  _vm.newTeacherSurname,
-                                                                callback: function(
-                                                                  $$v
-                                                                ) {
-                                                                  _vm.newTeacherSurname = $$v
-                                                                },
-                                                                expression:
-                                                                  "newTeacherSurname"
-                                                              }
-                                                            })
-                                                          ],
-                                                          1
-                                                        ),
-                                                        _vm._v(" "),
-                                                        _c(
-                                                          "td",
-                                                          [
-                                                            _c("v-text-field", {
-                                                              staticClass:
-                                                                "mt-3",
-                                                              attrs: {
-                                                                label:
-                                                                  "New Teacher's patronymic"
-                                                              },
-                                                              model: {
-                                                                value:
-                                                                  _vm.newTeacherPatronymic,
-                                                                callback: function(
-                                                                  $$v
-                                                                ) {
-                                                                  _vm.newTeacherPatronymic = $$v
-                                                                },
-                                                                expression:
-                                                                  "newTeacherPatronymic"
-                                                              }
-                                                            })
-                                                          ],
-                                                          1
-                                                        ),
-                                                        _vm._v(" "),
-                                                        _c(
-                                                          "td",
-                                                          [
-                                                            _c(
-                                                              "v-btn",
-                                                              {
-                                                                attrs: {
-                                                                  color:
-                                                                    "success"
-                                                                }
-                                                              },
-                                                              [
-                                                                _vm._v(
-                                                                  "\n                                                            save\n                                                        "
-                                                                )
-                                                              ]
-                                                            )
-                                                          ],
-                                                          1
-                                                        )
-                                                      ]
-                                                    },
-                                                    proxy: true
-                                                  }
-                                                ]),
-                                                model: {
-                                                  value: _vm.teachers,
-                                                  callback: function($$v) {
-                                                    _vm.teachers = $$v
-                                                  },
-                                                  expression: "teachers"
-                                                }
-                                              })
-                                            ],
-                                            1
+                                            [_vm._v("save")]
                                           )
                                         ],
                                         1
@@ -39805,7 +40138,7 @@ var render = function() {
             }
           }),
           _vm._v(" "),
-          _c("v-toolbar-title", [_vm._v("ExpUC")]),
+          _c("v-toolbar-title", [_vm._v("\n            ExpUC\n        ")]),
           _vm._v(" "),
           _c("v-spacer"),
           _vm._v(" "),
@@ -82883,9 +83216,11 @@ if (token) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _AddNewSubject_vue_vue_type_template_id_7605cc12___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AddNewSubject.vue?vue&type=template&id=7605cc12& */ "./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&");
+/* harmony import */ var _AddNewSubject_vue_vue_type_template_id_7605cc12_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AddNewSubject.vue?vue&type=template&id=7605cc12&scoped=true& */ "./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&scoped=true&");
 /* harmony import */ var _AddNewSubject_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AddNewSubject.vue?vue&type=script&lang=js& */ "./resources/js/components/AddNewSubject.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _AddNewSubject_vue_vue_type_style_index_0_id_7605cc12_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css& */ "./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -82893,13 +83228,13 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _AddNewSubject_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _AddNewSubject_vue_vue_type_template_id_7605cc12___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _AddNewSubject_vue_vue_type_template_id_7605cc12___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _AddNewSubject_vue_vue_type_template_id_7605cc12_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _AddNewSubject_vue_vue_type_template_id_7605cc12_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
-  null,
+  "7605cc12",
   null
   
 )
@@ -82925,19 +83260,35 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&":
-/*!**********************************************************************************!*\
-  !*** ./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12& ***!
-  \**********************************************************************************/
+/***/ "./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css&":
+/*!************************************************************************************************************!*\
+  !*** ./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css& ***!
+  \************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_style_index_0_id_7605cc12_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AddNewSubject.vue?vue&type=style&index=0&id=7605cc12&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_style_index_0_id_7605cc12_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_style_index_0_id_7605cc12_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_style_index_0_id_7605cc12_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_style_index_0_id_7605cc12_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_style_index_0_id_7605cc12_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&scoped=true&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&scoped=true& ***!
+  \**********************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_template_id_7605cc12___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./AddNewSubject.vue?vue&type=template&id=7605cc12& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_template_id_7605cc12___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_template_id_7605cc12_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./AddNewSubject.vue?vue&type=template&id=7605cc12&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AddNewSubject.vue?vue&type=template&id=7605cc12&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_template_id_7605cc12_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_template_id_7605cc12___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewSubject_vue_vue_type_template_id_7605cc12_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

@@ -4,7 +4,9 @@
             <v-toolbar-side-icon
                     @click.stop="drawer = !drawer"
             ></v-toolbar-side-icon>
-            <v-toolbar-title>ExpUC</v-toolbar-title>
+            <v-toolbar-title>
+                ExpUC
+            </v-toolbar-title>
 
             <v-spacer></v-spacer>
 
