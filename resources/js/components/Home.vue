@@ -2,7 +2,7 @@
     <div>
         <v-content>
             <v-layout align-center justify-center row full-height>
-                <v-flex xs10 lg8 pt-5>
+                <v-flex xs10 lg10 pt-5>
                     <v-card>
                         <v-card-title>
                             <v-layout justify-center>

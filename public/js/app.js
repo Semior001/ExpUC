@@ -3024,65 +3024,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Schedule',
   data: function data() {
@@ -38953,7 +38894,7 @@ var render = function() {
             [
               _c(
                 "v-flex",
-                { attrs: { xs10: "", lg8: "", "pt-5": "" } },
+                { attrs: { xs10: "", lg10: "", "pt-5": "" } },
                 [
                   _c(
                     "v-card",
@@ -39675,7 +39616,7 @@ var render = function() {
             [
               _c(
                 "v-flex",
-                { attrs: { xs10: "", lg8: "", "pt-5": "" } },
+                { attrs: { xs10: "", lg10: "", "pt-5": "" } },
                 [
                   _c(
                     "v-card",
@@ -40555,7 +40496,7 @@ var render = function() {
             [
               _c(
                 "v-flex",
-                { attrs: { xs10: "", lg8: "", "pt-5": "" } },
+                { attrs: { xs10: "", lg10: "", "pt-5": "" } },
                 [
                   _c(
                     "v-card",
@@ -41165,7 +41106,7 @@ var render = function() {
             [
               _c(
                 "v-flex",
-                { attrs: { xs10: "", lg8: "", "pt-5": "" } },
+                { attrs: { xs10: "", lg10: "", "pt-5": "" } },
                 [
                   _c(
                     "v-card",
@@ -41188,40 +41129,11 @@ var render = function() {
                           _c("v-calendar", {
                             ref: "calendar",
                             attrs: {
-                              now: _vm.today,
-                              value: _vm.today,
                               color: "primary",
-                              type: "week"
+                              type: "week",
+                              weekdays: [1, 2, 3, 4, 5, 6, 0]
                             },
                             scopedSlots: _vm._u([
-                              {
-                                key: "dayHeadere",
-                                fn: function(ref) {
-                                  var date = ref.date
-                                  return [
-                                    _vm._l(_vm.eventsMap[date], function(
-                                      event
-                                    ) {
-                                      return [
-                                        !event.time
-                                          ? _c("div", {
-                                              key: event.title,
-                                              staticClass: "my-event",
-                                              domProps: {
-                                                innerHTML: _vm._s(event.title)
-                                              },
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.open(event)
-                                                }
-                                              }
-                                            })
-                                          : _vm._e()
-                                      ]
-                                    })
-                                  ]
-                                }
-                              },
                               {
                                 key: "dayBody",
                                 fn: function(ref) {
@@ -41256,96 +41168,6 @@ var render = function() {
                                           : _vm._e()
                                       ]
                                     })
-                                  ]
-                                }
-                              }
-                            ])
-                          })
-                        ],
-                        1
-                      )
-                    ],
-                    1
-                  )
-                ],
-                1
-              )
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "v-layout",
-            {
-              staticClass: "hidden-lg-and-up",
-              attrs: {
-                "align-center": "",
-                "justify-center": "",
-                row: "",
-                "full-height": ""
-              }
-            },
-            [
-              _c("v-btn", [_c("v-icon", [_vm._v("keyboard_arrow_left")])], 1),
-              _vm._v(" "),
-              _c("v-btn", [_c("v-icon", [_vm._v("keyboard_arrow_right")])], 1),
-              _vm._v(" "),
-              _c(
-                "v-flex",
-                { attrs: { xs10: "", lg8: "", "pt-5": "" } },
-                [
-                  _c(
-                    "v-card",
-                    [
-                      _c(
-                        "v-card-title",
-                        [
-                          _c("v-layout", { attrs: { "justify-center": "" } }, [
-                            _c("span", { staticClass: "headline" }, [
-                              _vm._v("Schedule")
-                            ])
-                          ])
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-container",
-                        [
-                          _c("v-calendar", {
-                            attrs: { color: "primary", type: "day" },
-                            scopedSlots: _vm._u([
-                              {
-                                key: "dayHeader",
-                                fn: function(ref) {
-                                  var present = ref.present
-                                  return [
-                                    present
-                                      ? [
-                                          _vm._v(
-                                            "\n                                    Today\n                                "
-                                          )
-                                        ]
-                                      : _vm._e()
-                                  ]
-                                }
-                              },
-                              {
-                                key: "interval",
-                                fn: function(ref) {
-                                  var hour = ref.hour
-                                  return [
-                                    _c(
-                                      "div",
-                                      { staticClass: "text-xs-center" },
-                                      [
-                                        _vm._v(
-                                          "\n                                    " +
-                                            _vm._s(hour) +
-                                            " o'clock\n                                "
-                                        )
-                                      ]
-                                    )
                                   ]
                                 }
                               }
