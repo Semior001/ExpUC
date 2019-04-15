@@ -7,6 +7,7 @@ use App\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class SubjectController extends Controller
 {
@@ -51,8 +52,64 @@ class SubjectController extends Controller
         return response()->json(true)->setStatusCode(200);
     }
 
-    public function getAllSubjects(){
-        return response()->json(Subject::all())->setStatusCode(200);
+    public function getAllSubjects(Request $request){
+        $user = $request->user();
+
+        $sortBy = 'id';
+        $order = 'asc';
+        $itemsPerPage = 10;
+        $search= '';
+
+        if($request->has('sortBy') && Schema::hasColumn('subjects', $request->get('sortBy'))){
+            $sortBy = $request->get('sortBy');
+        }
+
+        if($request->has('order') && ($request->get('order') == 'asc' ||  $request->get('order') == 'desc')){
+            $order = $request->get('order');
+        }
+
+        if($request->has('itemsPerPage')){
+            $itemsPerPage = $request->get('itemsPerPage');
+        }
+
+        if($request->has('search')){
+            $search = $request->get('search');
+        }
+
+        if($itemsPerPage == -1){
+            $subjects = Subject::where('name', 'like', '%'.$search.'%')
+                ->orWhereHas('teachers', function($query) use ($search){
+                    $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('surname', 'like', '%'.$search.'%')
+                        ->orWhere('patronymic', 'like', '%'.$search.'%');
+                })
+                ->with('teachers')
+                ->orderBy($sortBy, $order)
+                ->get();
+            return response()->json([
+                "data" => $subjects,
+                "total" => $subjects->count()
+            ]);
+        }
+
+        $subjects = Subject::where('name', 'like', '%'.$search.'%')
+            ->orWhereHas('teachers', function($query) use ($search){
+                $query->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('surname', 'like', '%'.$search.'%')
+                    ->orWhere('patronymic', 'like', '%'.$search.'%');
+            })
+            ->with('teachers')
+            ->orderBy($sortBy, $order)
+            ->paginate($itemsPerPage);
+
+        foreach($subjects as $subject){
+            $subject->isMine = $subject->users()->where('id', $user->id)->exists();
+        }
+
+        return response()->json(
+            $subjects
+        )->setStatusCode(200);
+
     }
 
     public function getUserSubjects(Request $request){

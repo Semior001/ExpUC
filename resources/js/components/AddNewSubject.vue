@@ -1,6 +1,14 @@
 <template>
     <div>
         <v-content>
+
+            <v-alert
+                    class="mb-2"
+                    :value="!!alertMessage"
+                    :type="alertMessageType">
+                {{ alertMessage }}
+            </v-alert>
+
             <v-layout align-center justify-center row full-height>
                 <v-flex xs10 lg10 pt-5>
                     <v-card>
@@ -10,6 +18,56 @@
                             </v-layout>
                         </v-card-title>
                         <v-container>
+                            <v-form @submit.prevent="getSubjects" id="searchSubjectForm">
+                                <v-text-field
+                                        form="searchSubjectForm"
+                                        v-model="searchSubject"
+                                        label="Search subjects by name or teacher's name/surname/patronymic">
+                                </v-text-field>
+                            </v-form>
+
+                            <v-data-table
+                                    :headers="subjectTable_Headers"
+                                    :items="subjects"
+                                    v-model="subjects"
+                                    :loading="loadingSubjects"
+                                    :pagination.sync="paginationSubjects"
+                                    :total-items="totalSubjects"
+                            >
+                                <template v-slot:no-data>
+                                    <v-alert :value="true" color="error" icon="warning">
+                                        Sorry, nothing to display here :(
+                                    </v-alert>
+                                </template>
+                                <template v-slot:items="props">
+                                    <td>{{ props.item.name }}</td>
+                                    <td>{{ props.item.weekday }}</td>
+                                    <td>{{ props.item.start_time }}</td>
+                                    <td>{{ props.item.end_time }}</td>
+                                    <td>{{ props.item.place }}</td>
+                                    <td>
+                                        <template v-for="teacher in props.item.teachers">
+                                            {{ teacher.surname }} {{ teacher.name }} {{ teacher.patronymic }}
+                                        </template>
+                                    </td>
+                                    <td>
+                                        <template v-if="!props.item.isMine">
+                                            <v-btn
+                                                color="success"
+                                                @click.end="addExistingSubject(props.item.id)">
+                                                Add
+                                            </v-btn>
+                                        </template>
+                                        <template v-else>
+                                            <v-btn
+                                                disabled
+                                                color="primary">
+                                                Already in your schedule
+                                            </v-btn>
+                                        </template>
+                                    </td>
+                                </template>
+                            </v-data-table>
 
                         </v-container>
                     </v-card>
@@ -32,12 +90,6 @@
                             >
                                 <v-layout justify-center>
                                     <v-flex xs10 lg10>
-                                        <v-alert
-                                                class="mb-2"
-                                                :value="!!alertMessage"
-                                                :type="alertMessageType">
-                                            {{ alertMessage }}
-                                        </v-alert>
 
                                         <v-layout justify-center mb-5 mt-4>
                                             <v-subheader class="green--text">
@@ -283,9 +335,80 @@
                 endTime: '',
                 place: '',
                 selectedTeacher: null,
+
+
+                subjectTable_Headers: [
+                    {
+                        text: 'Name',
+                        align: 'left',
+                        value: 'name',
+                    },
+                    {
+                        text: 'Day of week',
+                        align: 'left',
+                        value: 'weekday',
+                    },
+                    {
+                        text: 'Start time',
+                        align: 'left',
+                        value: 'start_time',
+                    },
+                    {
+                        text: 'End time',
+                        align: 'left',
+                        value: 'end_time',
+                    },
+                    {
+                        text: 'Place',
+                        align: 'left',
+                        value: 'place',
+                    },
+                    {
+                        text: 'Teacher',
+                        align: 'left',
+                        value: 'teachers',
+                    },
+                    {
+                        text: '',
+                        value: '',
+                        sortable: false
+                    },
+                ],
+
+                paginationSubjects: {},
+                loadingSubjects: false,
+                totalSubjects: 0,
+                subjects: [],
+                searchSubject: '',
+
             };
         },
         methods: {
+            addExistingSubject(id){
+                axios({
+                    url: '/api/user/addSubject',
+                    data: {
+                        'id': id
+                    },
+                    method: 'POST'
+                }).then(response => {
+                    if(response.status === 200) {
+                        window.scrollTo(0,0);
+                        this.alertMessageType = 'success';
+                        this.alertMessage = 'Success! Your subject has been saved! Go to your schedule to watch it';
+                        return;
+                    }
+                    window.scrollTo(0,0);
+                    console.log('Oops! Bad request');
+                    console.log(response);
+                    this.alertMessageType = 'error';
+                    this.alertMessage = 'Oops! ' + response.response.data;
+                }).catch(error => {
+                    window.scrollTo(0,0);
+                    this.alertMessageType = 'error';
+                    this.alertMessage = error.message;
+                });
+            },
             submitNewSubject(){
                 if (!this.$refs.form.validate() || !this.startTime || !this.endTime || !this.selectedTeacher) {
                     window.scrollTo(0,0);
@@ -307,7 +430,6 @@
                     method: 'POST'
                 }).then(response => {
                     if(response.status === 200) {
-                        // todo скролл наверх и показ алерта об успешном создании предмета (очистка формы, возможно)
                         window.scrollTo(0,0);
                         this.alertMessageType = 'success';
                         this.alertMessage = 'Success! Your subject has been saved! Go to your schedule to watch it';
@@ -323,6 +445,32 @@
                     this.alertMessageType = 'error';
                     this.alertMessage = error.message;
                 });
+
+            },
+            getSubjects(){
+                this.loadingSubjects = true;
+
+                const { sortBy, descending, page, rowsPerPage } = this.paginationSubjects;
+
+                axios({
+                    url: '/api/subjects/all?page=' + page
+                    + '&sortBy=' + sortBy
+                    + '&order=' + (descending ? 'desc' : 'asc')
+                    + '&itemsPerPage=' + rowsPerPage
+                    + '&search=' + this.searchSubject,
+                    method: 'GET'
+                }).then(response => {
+                    if(response.status === 200){
+                        this.subjects = response.data.data;
+                        this.totalSubjects = response.data.total;
+                        return;
+                    }
+                    this.subjects = [];
+                }).catch(error => {
+                    this.subjects = [];
+                });
+
+                this.loadingSubjects = false;
 
             },
             getTeachers(){
@@ -386,6 +534,12 @@
                     this.getTeachers();
                 },
                 deep: true
+            },
+            paginationSubjects: {
+                handler(){
+                    this.getSubjects();
+                },
+                deep: true
             }
         },
         computed: {
@@ -395,6 +549,7 @@
         },
         mounted() {
             this.getTeachers();
+            this.getSubjects();
         }
     }
 

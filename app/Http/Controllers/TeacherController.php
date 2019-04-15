@@ -59,6 +59,6 @@ class TeacherController extends Controller
 
         return response()->json(
             $teachers
-        );
+        )->setStatusCode(200);
     }
 }

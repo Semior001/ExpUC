@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::group(['prefix' => 'user'], function(){
         Route::get('getBasicUserData', 'ApiUserController@getBasicUserData');
         Route::post('update', 'ApiUserController@updateUser');
+        Route::post('addSubject', 'ApiUserController@addSubject');
     });
 
     Route::group(['prefix' => 'teachers'], function(){

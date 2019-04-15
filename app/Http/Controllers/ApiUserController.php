@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\File;
+use App\Subject;
 use Faker\Provider\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -22,6 +23,26 @@ class ApiUserController extends Controller
             'showSchedule' => $user->show_schedule,
             'avatar' => $user->avatar()->exists() ? $user->avatar()->orderBy('created_at', 'desc')->first()->path : 'img/account.png'
         ])->setStatusCode(200);
+    }
+
+    public function addSubject(Request $request){
+
+        if(!$request->has('id')){
+            return response()->json(['message' => 'Not enough arguments'])->setStatusCode(400);
+        }
+
+        $subject = Subject::find($request->get('id'));
+
+        if($subject === null){
+            return response()->json(['message' => 'Requested subject does not exist!'])->setStatusCode(400);
+        }
+
+        $user = $request->user();
+
+        $user->subjects()->save($subject);
+
+        return response('true', 200);
+
     }
 
     public function updateUser(Request $request){

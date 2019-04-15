@@ -1965,6 +1965,58 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'AddNewSubject',
   data: function data() {
@@ -2032,12 +2084,74 @@ __webpack_require__.r(__webpack_exports__);
       startTime: '',
       endTime: '',
       place: '',
-      selectedTeacher: null
+      selectedTeacher: null,
+      subjectTable_Headers: [{
+        text: 'Name',
+        align: 'left',
+        value: 'name'
+      }, {
+        text: 'Day of week',
+        align: 'left',
+        value: 'weekday'
+      }, {
+        text: 'Start time',
+        align: 'left',
+        value: 'start_time'
+      }, {
+        text: 'End time',
+        align: 'left',
+        value: 'end_time'
+      }, {
+        text: 'Place',
+        align: 'left',
+        value: 'place'
+      }, {
+        text: 'Teacher',
+        align: 'left',
+        value: 'teachers'
+      }, {
+        text: '',
+        value: '',
+        sortable: false
+      }],
+      paginationSubjects: {},
+      loadingSubjects: false,
+      totalSubjects: 0,
+      subjects: [],
+      searchSubject: ''
     };
   },
   methods: {
-    submitNewSubject: function submitNewSubject() {
+    addExistingSubject: function addExistingSubject(id) {
       var _this = this;
+
+      axios({
+        url: '/api/user/addSubject',
+        data: {
+          'id': id
+        },
+        method: 'POST'
+      }).then(function (response) {
+        if (response.status === 200) {
+          window.scrollTo(0, 0);
+          _this.alertMessageType = 'success';
+          _this.alertMessage = 'Success! Your subject has been saved! Go to your schedule to watch it';
+          return;
+        }
+
+        window.scrollTo(0, 0);
+        console.log('Oops! Bad request');
+        console.log(response);
+        _this.alertMessageType = 'error';
+        _this.alertMessage = 'Oops! ' + response.response.data;
+      })["catch"](function (error) {
+        window.scrollTo(0, 0);
+        _this.alertMessageType = 'error';
+        _this.alertMessage = error.message;
+      });
+    },
+    submitNewSubject: function submitNewSubject() {
+      var _this2 = this;
 
       if (!this.$refs.form.validate() || !this.startTime || !this.endTime || !this.selectedTeacher) {
         window.scrollTo(0, 0);
@@ -2059,26 +2173,50 @@ __webpack_require__.r(__webpack_exports__);
         method: 'POST'
       }).then(function (response) {
         if (response.status === 200) {
-          // todo скролл наверх и показ алерта об успешном создании предмета (очистка формы, возможно)
           window.scrollTo(0, 0);
-          _this.alertMessageType = 'success';
-          _this.alertMessage = 'Success! Your subject has been saved! Go to your schedule to watch it';
+          _this2.alertMessageType = 'success';
+          _this2.alertMessage = 'Success! Your subject has been saved! Go to your schedule to watch it';
           return;
         }
 
         window.scrollTo(0, 0);
         console.log('Oops! Bad request');
         console.log(response);
-        _this.alertMessageType = 'error';
-        _this.alertMessage = 'Oops! ' + response.response.data;
+        _this2.alertMessageType = 'error';
+        _this2.alertMessage = 'Oops! ' + response.response.data;
       })["catch"](function (error) {
         window.scrollTo(0, 0);
-        _this.alertMessageType = 'error';
-        _this.alertMessage = error.message;
+        _this2.alertMessageType = 'error';
+        _this2.alertMessage = error.message;
       });
     },
+    getSubjects: function getSubjects() {
+      var _this3 = this;
+
+      this.loadingSubjects = true;
+      var _this$paginationSubje = this.paginationSubjects,
+          sortBy = _this$paginationSubje.sortBy,
+          descending = _this$paginationSubje.descending,
+          page = _this$paginationSubje.page,
+          rowsPerPage = _this$paginationSubje.rowsPerPage;
+      axios({
+        url: '/api/subjects/all?page=' + page + '&sortBy=' + sortBy + '&order=' + (descending ? 'desc' : 'asc') + '&itemsPerPage=' + rowsPerPage + '&search=' + this.searchSubject,
+        method: 'GET'
+      }).then(function (response) {
+        if (response.status === 200) {
+          _this3.subjects = response.data.data;
+          _this3.totalSubjects = response.data.total;
+          return;
+        }
+
+        _this3.subjects = [];
+      })["catch"](function (error) {
+        _this3.subjects = [];
+      });
+      this.loadingSubjects = false;
+    },
     getTeachers: function getTeachers() {
-      var _this2 = this;
+      var _this4 = this;
 
       this.loadingTeachers = true;
       var _this$paginationTeach = this.paginationTeachers,
@@ -2091,19 +2229,19 @@ __webpack_require__.r(__webpack_exports__);
         method: 'GET'
       }).then(function (response) {
         if (response.status === 200) {
-          _this2.teachers = response.data.data;
-          _this2.totalTeachers = response.data.total;
+          _this4.teachers = response.data.data;
+          _this4.totalTeachers = response.data.total;
           return;
         }
 
-        _this2.teachers = [];
+        _this4.teachers = [];
       })["catch"](function (error) {
-        _this2.teachers = [];
+        _this4.teachers = [];
       });
       this.loadingTeachers = false;
     },
     addNewTeacher: function addNewTeacher() {
-      var _this3 = this;
+      var _this5 = this;
 
       if (!this.newTeacherPatronymic || !this.newTeacherSurname || !this.newTeacherName) return;
       this.newTeacherAddDisabled = true;
@@ -2117,11 +2255,11 @@ __webpack_require__.r(__webpack_exports__);
         method: 'POST'
       }).then(function (response) {
         if (response.status === 200) {
-          _this3.newTeacherName = '';
-          _this3.newTeacherSurname = '';
-          _this3.newTeacherPatronymic = '';
+          _this5.newTeacherName = '';
+          _this5.newTeacherSurname = '';
+          _this5.newTeacherPatronymic = '';
 
-          _this3.getTeachers();
+          _this5.getTeachers();
 
           return;
         }
@@ -2139,6 +2277,12 @@ __webpack_require__.r(__webpack_exports__);
         this.getTeachers();
       },
       deep: true
+    },
+    paginationSubjects: {
+      handler: function handler() {
+        this.getSubjects();
+      },
+      deep: true
     }
   },
   computed: {
@@ -2148,6 +2292,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     this.getTeachers();
+    this.getSubjects();
   }
 });
 
@@ -39137,6 +39282,15 @@ var render = function() {
         "v-content",
         [
           _c(
+            "v-alert",
+            {
+              staticClass: "mb-2",
+              attrs: { value: !!_vm.alertMessage, type: _vm.alertMessageType }
+            },
+            [_vm._v("\n            " + _vm._s(_vm.alertMessage) + "\n        ")]
+          ),
+          _vm._v(" "),
+          _c(
             "v-layout",
             {
               attrs: {
@@ -39168,7 +39322,192 @@ var render = function() {
                         1
                       ),
                       _vm._v(" "),
-                      _c("v-container")
+                      _c(
+                        "v-container",
+                        [
+                          _c(
+                            "v-form",
+                            {
+                              attrs: { id: "searchSubjectForm" },
+                              on: {
+                                submit: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.getSubjects($event)
+                                }
+                              }
+                            },
+                            [
+                              _c("v-text-field", {
+                                attrs: {
+                                  form: "searchSubjectForm",
+                                  label:
+                                    "Search subjects by name or teacher's name/surname/patronymic"
+                                },
+                                model: {
+                                  value: _vm.searchSubject,
+                                  callback: function($$v) {
+                                    _vm.searchSubject = $$v
+                                  },
+                                  expression: "searchSubject"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c("v-data-table", {
+                            attrs: {
+                              headers: _vm.subjectTable_Headers,
+                              items: _vm.subjects,
+                              loading: _vm.loadingSubjects,
+                              pagination: _vm.paginationSubjects,
+                              "total-items": _vm.totalSubjects
+                            },
+                            on: {
+                              "update:pagination": function($event) {
+                                _vm.paginationSubjects = $event
+                              }
+                            },
+                            scopedSlots: _vm._u([
+                              {
+                                key: "no-data",
+                                fn: function() {
+                                  return [
+                                    _c(
+                                      "v-alert",
+                                      {
+                                        attrs: {
+                                          value: true,
+                                          color: "error",
+                                          icon: "warning"
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                                    Sorry, nothing to display here :(\n                                "
+                                        )
+                                      ]
+                                    )
+                                  ]
+                                },
+                                proxy: true
+                              },
+                              {
+                                key: "items",
+                                fn: function(props) {
+                                  return [
+                                    _c("td", [_vm._v(_vm._s(props.item.name))]),
+                                    _vm._v(" "),
+                                    _c("td", [
+                                      _vm._v(_vm._s(props.item.weekday))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", [
+                                      _vm._v(_vm._s(props.item.start_time))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", [
+                                      _vm._v(_vm._s(props.item.end_time))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", [
+                                      _vm._v(_vm._s(props.item.place))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "td",
+                                      [
+                                        _vm._l(props.item.teachers, function(
+                                          teacher
+                                        ) {
+                                          return [
+                                            _vm._v(
+                                              "\n                                        " +
+                                                _vm._s(teacher.surname) +
+                                                " " +
+                                                _vm._s(teacher.name) +
+                                                " " +
+                                                _vm._s(teacher.patronymic) +
+                                                "\n                                    "
+                                            )
+                                          ]
+                                        })
+                                      ],
+                                      2
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "td",
+                                      [
+                                        !props.item.isMine
+                                          ? [
+                                              _c(
+                                                "v-btn",
+                                                {
+                                                  attrs: { color: "success" },
+                                                  on: {
+                                                    click: function($event) {
+                                                      if (
+                                                        !$event.type.indexOf(
+                                                          "key"
+                                                        ) &&
+                                                        _vm._k(
+                                                          $event.keyCode,
+                                                          "end",
+                                                          undefined,
+                                                          $event.key,
+                                                          undefined
+                                                        )
+                                                      ) {
+                                                        return null
+                                                      }
+                                                      return _vm.addExistingSubject(
+                                                        props.item.id
+                                                      )
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    "\n                                            Add\n                                        "
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                          : [
+                                              _c(
+                                                "v-btn",
+                                                {
+                                                  attrs: {
+                                                    disabled: "",
+                                                    color: "primary"
+                                                  }
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    "\n                                            Already in your schedule\n                                        "
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                      ],
+                                      2
+                                    )
+                                  ]
+                                }
+                              }
+                            ]),
+                            model: {
+                              value: _vm.subjects,
+                              callback: function($$v) {
+                                _vm.subjects = $$v
+                              },
+                              expression: "subjects"
+                            }
+                          })
+                        ],
+                        1
+                      )
                     ],
                     1
                   )
@@ -39235,24 +39574,6 @@ var render = function() {
                                     "v-flex",
                                     { attrs: { xs10: "", lg10: "" } },
                                     [
-                                      _c(
-                                        "v-alert",
-                                        {
-                                          staticClass: "mb-2",
-                                          attrs: {
-                                            value: !!_vm.alertMessage,
-                                            type: _vm.alertMessageType
-                                          }
-                                        },
-                                        [
-                                          _vm._v(
-                                            "\n                                        " +
-                                              _vm._s(_vm.alertMessage) +
-                                              "\n                                    "
-                                          )
-                                        ]
-                                      ),
-                                      _vm._v(" "),
                                       _c(
                                         "v-layout",
                                         {
