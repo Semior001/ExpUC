@@ -10,8 +10,23 @@
                             </v-layout>
                         </v-card-title>
                         <v-container>
+
+                            <v-layout justify-center class="hidden-md-and-up">
+                                <v-btn @click.end="previousDay">
+                                    <v-icon>
+                                        keyboard_arrow_left
+                                    </v-icon>
+                                </v-btn>
+                                <v-btn @click.end="nextDay">
+                                    <v-icon>
+                                        keyboard_arrow_right
+                                    </v-icon>
+                                </v-btn>
+                            </v-layout>
+
                             <v-calendar
-                                    ref="calendar"
+                                    class="hidden-sm-and-down"
+                                    ref="calendarWeek"
                                     color="primary"
                                     type="week"
                                     :weekdays="[1,2,3,4,5,6,0]"
@@ -22,6 +37,73 @@
                                         <v-menu
                                             :key="event.name"
                                             v-model="event.open">
+                                            <template v-slot:activator="{ on }">
+                                                <div
+                                                        v-if="event.start_time"
+
+                                                        :style="{ top: timeToY(event.start_time) + 'px', height: minutesToPixels(event.duration) + 'px' }"
+                                                        class="basic-event with-time"
+                                                        v-html="event.name"
+                                                        v-on="on"
+                                                ></div>
+                                            </template>
+                                            <v-card
+                                                    min-width="350px"
+                                                    flat
+                                            >
+                                                <v-toolbar
+                                                        color="primary"
+                                                >
+                                                    <v-btn icon>
+                                                        <v-icon>description</v-icon>
+                                                    </v-btn>
+                                                    <v-toolbar-title v-html="event.name"></v-toolbar-title>
+                                                </v-toolbar>
+                                                <v-card-title primary-title>
+                                                    <span>
+                                                        <b>ID: </b> {{ event.id }} <br>
+                                                        <b>Weekday: </b> {{ event.weekdayName }} <br>
+                                                        <b>Start time: </b> {{ event.start_time }} <br>
+                                                        <b>End time: </b> {{ event.end_time }} <br>
+                                                        <b>Place: </b> {{ event.place }} <br>
+                                                        <b>Teacher: </b> <br>
+                                                        <template v-for="teacher in event.teachers">
+                                                            {{ teacher.surname }} {{ teacher.name }} {{ teacher.patronymic }} <br>
+                                                        </template>
+                                                        <b>Telegram groups: </b> <br>
+                                                        <template v-for="group in event.telegram_groups">
+<!--                                                            <a href="{{ group }}">{{ group }}</a>-->
+                                                        </template>
+                                                    </span>
+                                                </v-card-title>
+                                                <v-card-actions>
+                                                    <v-btn
+                                                            flat
+                                                            color="secondary"
+                                                    >
+                                                        Cancel
+                                                    </v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </v-menu>
+                                    </template>
+                                </template>
+                            </v-calendar>
+
+                            <v-calendar
+                                    class="hidden-md-and-up"
+                                    ref="calendarDay"
+                                    color="primary"
+                                    type="day"
+                                    :start="currentDay"
+                                    :weekdays="[1,2,3,4,5,6,0]"
+                            >
+                                <!-- the events at the bottom (timed) -->
+                                <template v-slot:dayBody="{ date, timeToY, minutesToPixels }">
+                                    <template v-for="event in eventsMap()[new Date(date).getDay()]">
+                                        <v-menu
+                                                :key="event.name"
+                                                v-model="event.open">
                                             <template v-slot:activator="{ on }">
                                                 <div
                                                         v-if="event.start_time"
@@ -88,9 +170,13 @@
         data: function(){
             return {
                 events: [],
+                currentDay: ''
             };
         },
         created: function(){
+            let today = new Date();
+            this.currentDay = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
             axios({
                 url: '/api/subjects/list',
                 method: 'GET'
@@ -129,6 +215,16 @@
             },
             open (event) {
                 alert(event)
+            },
+            nextDay(){
+                let nextDay = new Date(this.currentDay);
+                nextDay.setDate(nextDay.getDate() + 1);
+                this.currentDay = nextDay.getFullYear() + '-' + (nextDay.getMonth() + 1) + '-' + nextDay.getDate();
+            },
+            previousDay(){
+                let prevDay = new Date(this.currentDay);
+                prevDay.setDate(prevDay.getDate() - 1);
+                this.currentDay = prevDay.getFullYear() + '-' + (prevDay.getMonth() + 1) + '-' + prevDay.getDate();
             }
         },
     }
@@ -136,7 +232,7 @@
 
 <style>
     .theme--dark.v-calendar-daily{
-        background-color: #424242;
+        background-color: inherit;
     }
 </style>
 

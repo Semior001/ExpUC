@@ -6,7 +6,22 @@
                     <v-card>
                         <v-card-title>
                             <v-layout justify-center>
-                                <span class="headline">Add new subject</span>
+                                <span class="headline">Please, firstly, try to find an existing subject for better search and communicate with your groupmates</span>
+                            </v-layout>
+                        </v-card-title>
+                        <v-container>
+
+                        </v-container>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+
+            <v-layout align-center justify-center row full-height>
+                <v-flex xs10 lg10 pt-5>
+                    <v-card>
+                        <v-card-title>
+                            <v-layout justify-center>
+                                <span class="headline">Only if your subject doesn't appear in the list, add new</span>
                             </v-layout>
                         </v-card-title>
                         <v-container>
@@ -116,8 +131,8 @@
                                                     </v-alert>
                                                 </template>
                                                 <template v-slot:items="props">
-                                                    <td>{{ props.item.name }}</td>
                                                     <td>{{ props.item.surname }}</td>
+                                                    <td>{{ props.item.name }}</td>
                                                     <td>{{ props.item.patronymic }}</td>
                                                     <td>
                                                         <v-radio
