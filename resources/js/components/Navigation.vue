@@ -115,11 +115,10 @@
                         action: () => {this.$router.push(route.path)}
                     })
                 }
-            })
+            });
 
             if(this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm)
                 this.drawer = false;
-
         },
         methods: {
             logout: function(){

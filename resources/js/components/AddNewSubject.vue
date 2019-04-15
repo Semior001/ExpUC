@@ -200,31 +200,31 @@
                 weekdays: [
                     {
                         text: 'Monday',
-                        value: 0
-                    },
-                    {
-                        text: 'Tuesday',
                         value: 1
                     },
                     {
-                        text: 'Wednesday',
+                        text: 'Tuesday',
                         value: 2
                     },
                     {
-                        text: 'Thursday',
+                        text: 'Wednesday',
                         value: 3
                     },
                     {
-                        text: 'Friday',
+                        text: 'Thursday',
                         value: 4
                     },
                     {
-                        text: 'Saturday',
+                        text: 'Friday',
                         value: 5
                     },
                     {
-                        text: 'Sunday',
+                        text: 'Saturday',
                         value: 6
+                    },
+                    {
+                        text: 'Sunday',
+                        value: 0
                     }
                 ],
 
@@ -234,14 +234,14 @@
 
                 teacherTable_Headers: [
                     {
-                        text: 'Name',
-                        align: 'left',
-                        value: 'name',
-                    },
-                    {
                         text: 'Surname',
                         align: 'left',
                         value: 'surname',
+                    },
+                    {
+                        text: 'Name',
+                        align: 'left',
+                        value: 'name',
                     },
                     {
                         text: 'Patronymic',
@@ -273,6 +273,7 @@
         methods: {
             submitNewSubject(){
                 if (!this.$refs.form.validate() || !this.startTime || !this.endTime || !this.selectedTeacher) {
+                    window.scrollTo(0,0);
                     this.alertMessageType = 'error';
                     this.alertMessage = 'Oops! It looks like you forgot to write something...';
                     return;
@@ -298,11 +299,14 @@
                         return;
                     }
                     window.scrollTo(0,0);
+                    console.log('Oops! Bad request');
+                    console.log(response);
                     this.alertMessageType = 'error';
-                    this.alertMessage = 'Oops! ' + response;
+                    this.alertMessage = 'Oops! ' + response.response.data;
                 }).catch(error => {
+                    window.scrollTo(0,0);
                     this.alertMessageType = 'error';
-                    this.alertMessage = error;
+                    this.alertMessage = error.message;
                 });
 
             },
@@ -355,7 +359,7 @@
                     }
                     alert(response.data);
                 }).catch(error => {
-                    alert(error);
+                    alert(error.message);
                 });
 
                 this.newTeacherAddDisabled = false;

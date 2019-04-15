@@ -40,6 +40,8 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::group(['prefix' => 'subjects'], function(){
         Route::post('add', 'SubjectController@add');
+        Route::get('list', 'SubjectController@getUserSubjects');
+        Route::get('all', 'SubjectController@getAllSubjects');
     });
 
 });
